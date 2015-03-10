@@ -1,4 +1,10 @@
 package ch.epfl.infovisu;
+import java.awt.TextField;
+import java.awt.event.MouseWheelEvent;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import processing.core.*;
 
 @SuppressWarnings("serial")
@@ -31,7 +37,13 @@ public class Plate extends PApplet {
 	@Override
 	public void setup() {
 		size(800, 600, P3D);
-		noStroke();
+		noStroke(); //disable the outline
+		
+
+		   TextField nameField; 
+	       nameField = new TextField("A TextField",100); 
+	       nameField.setBounds(20,70,100,40); 
+		   add(nameField); 
 	}
 
 	/*
@@ -41,6 +53,14 @@ public class Plate extends PApplet {
 	 */
 	@Override
 	public void draw() {
+			String text = "foo";
+			JLabel l = new JLabel(text);
+			JPanel p = new JPanel();
+			p.add(l);
+			add(p);
+
+
+		
 		// Camera and lighting
 		camera(-height / 2, -CAM_ALTITUDE, 0, -PLATE_WIDTH/6, 0, 0, 0, 1, 0);
 		directionalLight(10, 10, 10, 1, -1, -1);
@@ -57,12 +77,15 @@ public class Plate extends PApplet {
 		
 		box(PLATE_WIDTH, 20, PLATE_WIDTH);
 		
+
+		
 	}
 
 	/*
 	 * Interactions
 	 */
 	public void keyPressed() {
+		System.out.println("key");
 		if (key == CODED) {
 			if (keyCode == LEFT) {
 				rotate_y += ROTATION_INCREMENT;
@@ -71,4 +94,13 @@ public class Plate extends PApplet {
 			}
 		}
 	}
+	
+	public void mouseWheel(MouseWheelEvent e) {
+	       int notches = e.getWheelRotation();
+	       if (notches < 0) { // mouse wheel up
+	       } else { // mouse wheel down
+	       }
+	}
+	
+	
 }
