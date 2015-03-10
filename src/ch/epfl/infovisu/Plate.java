@@ -1,9 +1,4 @@
 package ch.epfl.infovisu;
-import java.awt.TextField;
-import java.awt.event.MouseWheelEvent;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 
 
@@ -49,14 +44,15 @@ public class Plate extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	@Override
-	public void draw() {
+	public void draw() {	
+		pushMatrix();
 		// Camera and lighting
 		camera(-height / 2, -CAM_ALTITUDE, 0, -PLATE_WIDTH/6, 0, 0, 0, 1, 0);
 		directionalLight(10, 10, 10, 1, -1, -1);
 		ambientLight(AMBI, AMBI + 20, AMBI);
 		background(BG_COLOR);
 				
-		// Plate		
+		// Plate	
 		rotateY(rotate_y);	
 		
 		float rotate_x = map(mouseX, 0, width, MAX_ROTATION, -MAX_ROTATION); 
@@ -65,6 +61,12 @@ public class Plate extends PApplet {
 		rotateZ(rotate_z);
 		
 		box(PLATE_WIDTH, 20, PLATE_WIDTH);
+		popMatrix();
+		
+		textSize(15);
+		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 
+				500, 15); 
+		//fill(0, 0, 255);
 	}
 
 	/*
@@ -84,13 +86,12 @@ public class Plate extends PApplet {
 	public void mouseWheel(MouseEvent e) {
 	       int notches = e.getCount();
 	       if (notches < 0) { // mouse wheel up
-	    	   if(rotation_increment < 1)
+	    	   if(rotation_increment <= 0.25)
 	    		   rotation_increment=rotation_increment+0.01f;
 	       } else { // mouse wheel down
-	    	   if(rotation_increment > 0)
+	    	   if(rotation_increment >= 0.01)
 	    		   rotation_increment=rotation_increment-0.01f;
 	       }
-			System.out.println(rotation_increment);
 	}
 	
 	
