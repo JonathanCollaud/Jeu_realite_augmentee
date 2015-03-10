@@ -19,7 +19,7 @@ public class Plate extends PApplet {
 	private static final float PLATE_WIDTH = 200;
 	private static final float PLATE_HEIGTH = 20;
 	
-	private static final float BALL_SIZE = 20;
+	private static final float BALL_SIZE = 16;
 
 	/**
 	 * Shared var
@@ -52,7 +52,7 @@ public class Plate extends PApplet {
 		rotateZ(rotate_z);
 
 		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
-		translate(0,-BALL_SIZE,0);
+		translate(0,-(PLATE_HEIGTH/2 + BALL_SIZE),0);
 		sphere(BALL_SIZE);
 		popMatrix();
 		
