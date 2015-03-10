@@ -17,6 +17,9 @@ public class Plate extends PApplet {
 	
 	private static final float CAM_ALTITUDE = 160;
 	private static final float PLATE_WIDTH = 200;
+	private static final float PLATE_HEIGTH = 20;
+	
+	private static final float BALL_SIZE = 20;
 
 	/**
 	 * Shared var
@@ -67,6 +70,11 @@ public class Plate extends PApplet {
 		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 
 				500, 15); 
 		//fill(0, 0, 255);
+
+		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
+		
+		translate(0,-BALL_SIZE,0);
+		sphere(BALL_SIZE);
 	}
 
 	/*
