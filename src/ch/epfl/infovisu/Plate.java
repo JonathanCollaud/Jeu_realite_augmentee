@@ -5,7 +5,10 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+
+
 import processing.core.*;
+import processing.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class Plate extends PApplet {
@@ -15,7 +18,6 @@ public class Plate extends PApplet {
 	private final static float AMBI = 120;
 	private static final float BG_COLOR = 255;
 
-	private static final float ROTATION_INCREMENT = 0.1f;
 	private static final float MAX_ROTATION = radians(60);
 	
 	private static final float CAM_ALTITUDE = 160;
@@ -25,6 +27,7 @@ public class Plate extends PApplet {
 	 * Shared var
 	 */	
 	private float rotate_y = 0;
+	private float rotation_increment = 0.1f;
 
 	/**
 	 * Setup() and draw()
@@ -38,12 +41,6 @@ public class Plate extends PApplet {
 	public void setup() {
 		size(800, 600, P3D);
 		noStroke(); //disable the outline
-		
-
-		   TextField nameField; 
-	       nameField = new TextField("A TextField",100); 
-	       nameField.setBounds(20,70,100,40); 
-		   add(nameField); 
 	}
 
 	/*
@@ -53,14 +50,6 @@ public class Plate extends PApplet {
 	 */
 	@Override
 	public void draw() {
-			String text = "foo";
-			JLabel l = new JLabel(text);
-			JPanel p = new JPanel();
-			p.add(l);
-			add(p);
-
-
-		
 		// Camera and lighting
 		camera(-height / 2, -CAM_ALTITUDE, 0, -PLATE_WIDTH/6, 0, 0, 0, 1, 0);
 		directionalLight(10, 10, 10, 1, -1, -1);
@@ -76,30 +65,32 @@ public class Plate extends PApplet {
 		rotateZ(rotate_z);
 		
 		box(PLATE_WIDTH, 20, PLATE_WIDTH);
-		
-
-		
 	}
 
 	/*
 	 * Interactions
 	 */
 	public void keyPressed() {
-		System.out.println("key");
 		if (key == CODED) {
 			if (keyCode == LEFT) {
-				rotate_y += ROTATION_INCREMENT;
+				rotate_y += rotation_increment;
 			} else if (keyCode == RIGHT) {
-				rotate_y -= ROTATION_INCREMENT;
+				rotate_y -= rotation_increment;
 			}
 		}
 	}
 	
-	public void mouseWheel(MouseWheelEvent e) {
-	       int notches = e.getWheelRotation();
+	@Override
+	public void mouseWheel(MouseEvent e) {
+	       int notches = e.getCount();
 	       if (notches < 0) { // mouse wheel up
+	    	   if(rotation_increment < 1)
+	    		   rotation_increment=rotation_increment+0.01f;
 	       } else { // mouse wheel down
+	    	   if(rotation_increment > 0)
+	    		   rotation_increment=rotation_increment-0.01f;
 	       }
+			System.out.println(rotation_increment);
 	}
 	
 	
