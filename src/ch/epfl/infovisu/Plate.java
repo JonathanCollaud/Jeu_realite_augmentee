@@ -1,3 +1,4 @@
+package ch.epfl.infovisu;
 import processing.core.*;
 
 @SuppressWarnings("serial")
