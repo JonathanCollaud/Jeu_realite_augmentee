@@ -27,25 +27,13 @@ public class Plate extends PApplet {
 	private float rotate_y = 0;
 	private float rotation_increment = 0.1f;
 
-	/**
-	 * Setup() and draw()
-	 */
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see processing.core.PApplet#setup()
-	 */
 	@Override
 	public void setup() {
 		size(800, 600, P3D);
 		noStroke(); //disable the outline
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see processing.core.PApplet#draw()
-	 */
+	
+	
 	@Override
 	public void draw() {	
 		pushMatrix();
@@ -64,15 +52,12 @@ public class Plate extends PApplet {
 		rotateZ(rotate_z);
 
 		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
+		translate(0,-BALL_SIZE,0);
+		sphere(BALL_SIZE);
 		popMatrix();
 		
 		textSize(15);
-		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 500, 15); 
-		//fill(0, 0, 255);
-
-		
-		translate(0,-BALL_SIZE,0);
-		sphere(BALL_SIZE);
+		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 500, 15);
 	}
 
 	/*
@@ -90,12 +75,11 @@ public class Plate extends PApplet {
 	
 	@Override
 	public void mouseWheel(MouseEvent e) {
-	       int notches = e.getCount();
-	       if (notches < 0) { // mouse wheel up
+	       if (e.getCount() < 0) { // mouse wheel up
 	    	   if(rotation_increment <= 0.25)
 	    		   rotation_increment=rotation_increment+0.01f;
 	       } else { // mouse wheel down
-	    	   if(rotation_increment >= 0.01)
+	    	   if(rotation_increment >= 0.02)
 	    		   rotation_increment=rotation_increment-0.01f;
 	       }
 	}
