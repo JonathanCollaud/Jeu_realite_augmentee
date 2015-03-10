@@ -62,16 +62,14 @@ public class Plate extends PApplet {
 		float rotate_z = map(mouseY, 0, height, MAX_ROTATION, -MAX_ROTATION);
 		rotateX(rotate_x);
 		rotateZ(rotate_z);
-		
-		box(PLATE_WIDTH, 20, PLATE_WIDTH);
+
+		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
 		popMatrix();
 		
 		textSize(15);
-		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 
-				500, 15); 
+		text("rotation : "+Math.round(rotation_increment*100.0)/100.0, 500, 15); 
 		//fill(0, 0, 255);
 
-		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
 		
 		translate(0,-BALL_SIZE,0);
 		sphere(BALL_SIZE);
