@@ -4,7 +4,7 @@ import processing.core.*;
 import processing.event.MouseEvent;
 
 @SuppressWarnings("serial")
-public class Plate extends PApplet {
+public class Game extends PApplet {
 	/**
 	 * Global parameters
 	 */
