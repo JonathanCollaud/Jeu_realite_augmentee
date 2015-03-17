@@ -17,10 +17,10 @@ public class Plate extends PApplet {
 
 	private static final float CAM_ALTITUDE = 160;
 	private static final float PLATE_WIDTH = 200;
-	private static final float PLATE_HEIGTH = 20;
+	private static final float PLATE_HEIGTH = 5;
 
-	private static final float BALL_SIZE = 16;
-	private static final float BALL_MASS = 2;
+	private static final float BALL_SIZE = 4;
+	private static final float BALL_MASS = 1;
 
 	/**
 	 * Shared var
@@ -29,8 +29,8 @@ public class Plate extends PApplet {
 	private float rotation_increment = 0.1f;
 	private PVector ballPosition = new PVector(0,
 			-(PLATE_HEIGTH / 2 + BALL_SIZE), 0);
-	private PVector velocity = new PVector(0, 0, 0);
-	private PVector gravityForce = new PVector(0, 0, 0);
+	private PVector ballVelocity = new PVector(0, 0, 0);
+	private PVector ballAcceleration = new PVector(0, 0, 0);
 
 	@Override
 	public void setup() {
@@ -57,37 +57,31 @@ public class Plate extends PApplet {
 
 		box(PLATE_WIDTH, PLATE_HEIGTH, PLATE_WIDTH);
 
-		// Gravity
-		gravityForce.x = sin(rotate_x) * GRAVITY_CONSTANT;
-		gravityForce.y = 0;
-		gravityForce.z = sin(rotate_z) * GRAVITY_CONSTANT;
-
+		// Ball positioning
 		float normalForce = 1;
 		float mu = (float) 0.01;
 		float frictionMagnitude = normalForce * mu;
 
-		PVector friction = velocity.get();
+		PVector friction = ballVelocity.get();
 		friction.mult(-1);
 		friction.normalize();
 		friction.mult(frictionMagnitude);
 
-		ballPosition.x += 0.5 * (gravityForce.x + frictionMagnitude) / BALL_MASS
-				+ velocity.x;
-		ballPosition.y += 0;
-		ballPosition.z += 0.5 * (gravityForce.z + frictionMagnitude)
-				/ BALL_MASS + velocity.z;
+		PVector forces = new PVector(sin(rotate_z) * GRAVITY_CONSTANT
+				+ friction.x, 0, -sin(rotate_x) * GRAVITY_CONSTANT + friction.z);
+		forces.div(BALL_MASS);
+		ballAcceleration.set(forces);
+		ballVelocity.add(ballAcceleration);
+		ballPosition.add(ballVelocity);
 
-		if (ballPosition.x < -PLATE_WIDTH / 2) {
-			ballPosition.x = -PLATE_WIDTH / 2;
+		// Border bouncing
+		if (ballPosition.x <= -PLATE_WIDTH / 2
+				|| ballPosition.x >= PLATE_WIDTH / 2) {
+			ballVelocity.x = -ballVelocity.x;
 		}
-		if (ballPosition.x > PLATE_WIDTH / 2) {
-			ballPosition.x = PLATE_WIDTH / 2;
-		}
-		if (ballPosition.z < -PLATE_WIDTH / 2) {
-			ballPosition.z = -PLATE_WIDTH / 2;
-		}
-		if (ballPosition.z > PLATE_WIDTH / 2) {
-			ballPosition.z = PLATE_WIDTH / 2;
+		if (ballPosition.z <= -PLATE_WIDTH / 2
+				|| ballPosition.z >= PLATE_WIDTH / 2) {
+			ballVelocity.z = -ballVelocity.z;
 		}
 
 		// Ball
