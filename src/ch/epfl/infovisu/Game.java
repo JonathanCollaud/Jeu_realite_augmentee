@@ -11,7 +11,7 @@ public class Game extends PApplet {
 	private static final float AMBI = 120;
 	private static final float BG_COLOR = 255;
 
-	private static final float GRAVITY_CONSTANT = (float) 9.81;
+	private static final float GRAVITY_CONSTANT = 9.81f;
 
 	private static final float MAX_ROTATION = radians(60);
 
@@ -20,7 +20,7 @@ public class Game extends PApplet {
 	private static final float PLATE_HEIGTH = 5;
 
 	private static final float BALL_SIZE = 4;
-	private static final float BALL_MASS = 20;
+	private static final float BALL_MASS = 1;
 
 	/**
 	 * Shared var
@@ -59,17 +59,17 @@ public class Game extends PApplet {
 
 		// Ball positioning
 		float normalForce = 1;
-		float mu = (float) 0.01;
-		float frictionMagnitude = normalForce * mu;
+		float mu = 0.01f;
+		float frictionMagnitude = normalForce * mu * BALL_MASS;
 
 		// Friction
 		PVector friction = ballVelocity.get();
 		friction.mult(-1);
 		friction.normalize();
-		friction.mult(frictionMagnitude*BALL_MASS);
+		friction.mult(frictionMagnitude);
 
-		PVector forces = new PVector(sin(rotate_z) * GRAVITY_CONSTANT
-				+ friction.x, 0, -sin(rotate_x) * GRAVITY_CONSTANT + friction.z);
+		PVector forces = new PVector(sin(rotate_z) * GRAVITY_CONSTANT * BALL_MASS
+				+ friction.x, 0, -sin(rotate_x) * GRAVITY_CONSTANT * BALL_MASS + friction.z);
 		forces.div(BALL_MASS);
 		ballAcceleration.set(forces);
 		ballVelocity.add(ballAcceleration);
