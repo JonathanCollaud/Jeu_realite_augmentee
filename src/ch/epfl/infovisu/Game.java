@@ -20,7 +20,7 @@ public class Game extends PApplet {
 	private static final float PLATE_HEIGTH = 5;
 
 	private static final float BALL_SIZE = 4;
-	private static final float BALL_MASS = 1;
+	private static final float BALL_MASS = 20;
 
 	/**
 	 * Shared var
@@ -62,10 +62,11 @@ public class Game extends PApplet {
 		float mu = (float) 0.01;
 		float frictionMagnitude = normalForce * mu;
 
+		// Friction
 		PVector friction = ballVelocity.get();
 		friction.mult(-1);
 		friction.normalize();
-		friction.mult(frictionMagnitude);
+		friction.mult(frictionMagnitude*BALL_MASS);
 
 		PVector forces = new PVector(sin(rotate_z) * GRAVITY_CONSTANT
 				+ friction.x, 0, -sin(rotate_x) * GRAVITY_CONSTANT + friction.z);
@@ -77,11 +78,13 @@ public class Game extends PApplet {
 		// Border bouncing
 		if (ballPosition.x <= -PLATE_WIDTH / 2
 				|| ballPosition.x >= PLATE_WIDTH / 2) {
-			ballVelocity.x = -ballVelocity.x;
+			ballPosition.x = Math.signum(ballPosition.x)*PLATE_WIDTH/2;
+			ballVelocity.x *= -1;
 		}
 		if (ballPosition.z <= -PLATE_WIDTH / 2
 				|| ballPosition.z >= PLATE_WIDTH / 2) {
-			ballVelocity.z = -ballVelocity.z;
+			ballPosition.z = Math.signum(ballPosition.z)*PLATE_WIDTH/2;
+			ballVelocity.z *= -1;
 		}
 
 		// Ball
