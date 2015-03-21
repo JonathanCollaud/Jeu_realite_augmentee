@@ -23,13 +23,13 @@ public class Game extends PApplet {
 	private float rotate_y = 0;
 	private float rotation_increment = 0.1f;
 	private float tiltSpeed = 1f;
-	private Mover mover;
+	private Mover mover;	
 
 	@Override
 	public void setup() {
 		size(800, 600, P3D);
 		noStroke(); // disable the outline
-		mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT, this);
+		mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT, this);		
 	}
 
 	@Override
@@ -51,12 +51,12 @@ public class Game extends PApplet {
 		rotateZ(rotate_z);
 
 		fill(color(167, 219, 216));
-		box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
-
+		box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);		
+		
 		// Ball
 		mover.checkEdges();
 		mover.update(rotate_z, rotate_x);
-		mover.display();
+		mover.display();				
 
 		popMatrix();
 
