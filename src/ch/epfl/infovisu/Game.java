@@ -8,13 +8,13 @@ public class Game extends PApplet {
 	/**
 	 * Global parameters
 	 */
-	private static final float AMBI = 120;
+	private static final float AMBI = 220;
 	private static final float BG_COLOR = 255;
 
 	private static final float MAX_ROTATION = radians(60);
 
 	private static final float CAM_ALTITUDE = 160;
-	private static final float PLATE_WIDTH = 200;
+	private static final float PLATE_WIDTH = 300;
 	private static final float PLATE_HEIGHT = 5;
 
 	/**
@@ -39,7 +39,7 @@ public class Game extends PApplet {
 		// Camera and lighting
 		camera(-height / 2, -CAM_ALTITUDE, 0, -PLATE_WIDTH / 6, 0, 0, 0, 1, 0);
 		directionalLight(10, 10, 10, 1, -1, -1);
-		ambientLight(AMBI, AMBI + 20, AMBI);
+		ambientLight(AMBI, AMBI, AMBI);
 		background(BG_COLOR);
 
 		// Plate rotation
@@ -50,16 +50,17 @@ public class Game extends PApplet {
 		rotateX(rotate_x);
 		rotateZ(rotate_z);
 
+		fill(color(167, 219, 216));
 		box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
 		// Ball
+		mover.checkEdges();
 		mover.update(rotate_z, rotate_x);
 		mover.display();
-		mover.checkEdges();
 
 		popMatrix();
 
-		// Printing text
+		// Information text
 		textSize(15);
 		text("rotation : " + Math.round(rotation_increment * 100.0) / 100.0,
 				500, 15);
