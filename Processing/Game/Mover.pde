@@ -2,7 +2,7 @@ import java.util.List;
 
 import processing.core.*;
 
-public class Mover {
+class Mover {
 
   private static final float GRAVITY_CONSTANT = 10f;
   private static final float BALL_MASS = 1f;

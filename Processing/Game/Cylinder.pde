@@ -1,6 +1,6 @@
 import processing.core.*;
 
-public class Cylinder {
+class Cylinder {
 
   private final static float CYLINDER_BASE_RADIUS = 100;
   private final static float CYLINDER_HEIGHT = 100;
