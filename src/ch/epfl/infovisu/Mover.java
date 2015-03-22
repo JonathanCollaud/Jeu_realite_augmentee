@@ -1,5 +1,8 @@
 package ch.epfl.infovisu;
 
+
+import java.util.List;
+
 import processing.core.*;
 
 public class Mover {
@@ -19,9 +22,9 @@ public class Mover {
 	private PVector ballVelocity = new PVector(0, 0, 0);
 	private PVector ballAcceleration = new PVector(0, 0, 0);
 	private PVector friction = new PVector(0, 0, 0);
-	private PApplet applet;
+	private Game applet;
 
-	public Mover(float plate_width, float plate_height, PApplet applet) {
+	public Mover(float plate_width, float plate_height, Game applet) {
 		this.plate_width = plate_width;
 		this.plate_height = plate_height;
 		this.applet = applet;
@@ -46,27 +49,43 @@ public class Mover {
 	}
 
 	public void display() {
-		applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);		
+		applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);
 		applet.sphere(BALL_SIZE);
 	}
 
 	public void checkEdges() {
 		if (ballPosition.x <= -plate_width / 2 + BALL_SIZE
 				|| ballPosition.x >= plate_width / 2 - BALL_SIZE) {
-			ballPosition.x = Math.signum(ballPosition.x) * (plate_width / 2 - BALL_SIZE);
+			ballPosition.x = Math.signum(ballPosition.x)
+					* (plate_width / 2 - BALL_SIZE);
 			ballVelocity.x *= -1;
 		}
 		if (ballPosition.z <= -plate_width / 2 + BALL_SIZE
 				|| ballPosition.z >= plate_width / 2 - BALL_SIZE) {
-			ballPosition.z = Math.signum(ballPosition.z) * (plate_width / 2 - BALL_SIZE);
+			ballPosition.z = Math.signum(ballPosition.z)
+					* (plate_width / 2 - BALL_SIZE);
 			ballVelocity.z *= -1;
 		}
 	}
-	
+
+	public void checkCylinderCollision() {
+		List<PVector> bumps = applet.getBumps();		
+		for (PVector bump : bumps) {			
+			if (bump.dist(ballPosition) <= 24) {				
+				PVector normal = PVector.sub(ballPosition, bump);	
+				normal.normalize();
+				
+				Float dotProd = PVector.dot(ballVelocity, normal)*2;
+				PVector multVect = PVector.mult(normal, dotProd);
+				ballVelocity = PVector.sub(ballVelocity, multVect);
+			}
+		}			
+	}
+
 	public float x() {
 		return ballPosition.x;
 	}
-	
+
 	public float z() {
 		return ballPosition.z;
 	}

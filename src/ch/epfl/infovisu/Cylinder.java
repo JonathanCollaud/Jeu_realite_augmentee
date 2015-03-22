@@ -36,9 +36,9 @@ public class Cylinder {
 		}
 		cylinder = applet.createShape();
 
-		// drawCap(x, z, 0);
+		drawCap(x, z, 0);
 		drawSides(x, z);
-		// drawCap(x, z, height);
+		drawCap(x, z, height);
 
 	}
 

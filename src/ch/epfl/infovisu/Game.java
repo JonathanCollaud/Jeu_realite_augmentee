@@ -112,18 +112,20 @@ public class Game extends PApplet {
 			// Plate rotation
 			rotateY(rotate_y);
 
-			rotate_x = map(mouseX, 0, width, MAX_ROTATION, -MAX_ROTATION);
-			rotate_z = map(mouseY, 0, height, MAX_ROTATION, -MAX_ROTATION);
+			rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
+					-MAX_ROTATION);
+			rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION, -MAX_ROTATION);
 
 			// Ball
 			mover.checkEdges();
+			mover.checkCylinderCollision();
 			mover.update(rotate_z, rotate_x);
 		} else {
 			// We are in edit mode
 			rotate_x = 0;
 			rotate_z = 0;
 
-			if (editable) {
+			if (paused) {
 
 				pushMatrix();
 
@@ -135,8 +137,10 @@ public class Game extends PApplet {
 
 				if (collides(cylinderSize, edit_x, edit_z)) {
 					fill(color(170, 40, 40));
+					editable = false;
 				} else {
 					fill(color(40, 170, 40));
+					editable = true;
 				}
 
 				Cylinder cursorCylinder = new Cylinder(cylinderSize, 20, this);
@@ -168,6 +172,10 @@ public class Game extends PApplet {
 
 		popMatrix();
 
+	}
+
+	public List<PVector> getBumps() {
+		return bumps;
 	}
 
 	// Vérifie qu’on puisse poser le cylindre (pas en dehors du terrain, ou sur
@@ -228,7 +236,7 @@ public class Game extends PApplet {
 		} else { // mouse wheel down
 			if (rotation_increment >= 0.2)
 				rotation_increment = rotation_increment - 0.01f;
-			if (tiltSpeed >= 0.2f)
+			if (tiltSpeed >= 0.5f)
 				tiltSpeed = tiltSpeed - 0.1f;
 		}
 	}
