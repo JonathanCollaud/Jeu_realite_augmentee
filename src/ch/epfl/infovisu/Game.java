@@ -1,6 +1,10 @@
 package ch.epfl.infovisu;
 
-import processing.core.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import processing.core.PApplet;
+import processing.core.PVector;
 import processing.event.MouseEvent;
 
 @SuppressWarnings("serial")
@@ -16,7 +20,9 @@ public class Game extends PApplet {
 	private static final float PLATE_WIDTH = 300;
 	private static final float PLATE_HEIGHT = 5;
 
-	private final float BASE_CAM_ROTATION = -height / 2;
+	private final float PAUSE_HEIGHT = -300;
+
+	private final float BASE_CAM_ROTATION = 0;
 	private final float BASE_CAM_ALTITUDE = -160;
 	private final float BASE_CAM_POSITION = -PLATE_WIDTH;
 
@@ -24,6 +30,8 @@ public class Game extends PApplet {
 	 * Shared var
 	 */
 	private boolean paused = false;
+	private boolean editable = false;
+	private float viewTransform = PAUSE_HEIGHT / 520;
 	private float rotate_x = 0;
 	private float rotate_y = 0;
 	private float rotate_z = 0;
@@ -33,6 +41,10 @@ public class Game extends PApplet {
 	private float rotation_increment = 0.1f;
 	private float tiltSpeed = 1f;
 	private Mover mover;
+	private List<PVector> bumps = new ArrayList<>();
+	private float edit_x = 0;
+	private float edit_z = 0;
+	float cylinderSize = 20;
 
 	@Override
 	public void setup() {
@@ -62,40 +74,34 @@ public class Game extends PApplet {
 	// Déplace la caméra si le jeu est mis sur pause avec shift
 	private void displayCamera() {
 		if (!paused) {
-			if (cam_pos != BASE_CAM_POSITION) {
-				cam_pos = getCloser(cam_pos, BASE_CAM_POSITION);
-			}
-			if (cam_alt != BASE_CAM_ALTITUDE) {
-				cam_alt = getCloser(cam_alt, BASE_CAM_ALTITUDE);
-			}
-			if (cam_rot != BASE_CAM_ROTATION) {
-				cam_rot = getCloser(cam_rot, BASE_CAM_ROTATION);
+			if (cam_pos == BASE_CAM_POSITION && cam_alt == BASE_CAM_ALTITUDE
+					&& cam_rot == BASE_CAM_ROTATION) {
+				// si tout est en place on peut ajouter des cylindres
+				editable = true;
+			} else {
+				if (cam_pos != BASE_CAM_POSITION) {
+					cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
+				}
+				if (cam_alt != BASE_CAM_ALTITUDE) {
+					cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
+				}
+				if (cam_rot != BASE_CAM_ROTATION) {
+					cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
+				}
 			}
 		} else {
 			if (cam_pos != 0) {
-				cam_pos = getCloser(cam_pos, 0);
+				cam_pos = Package.getCloser(cam_pos, 0);
 			}
-			if (cam_alt != -height / 2) {
-				cam_alt = getCloser(cam_alt, - height / 2);
+			if (cam_alt != PAUSE_HEIGHT) {
+				cam_alt = Package.getCloser(cam_alt, PAUSE_HEIGHT);
 			}
 			if (cam_rot != 1) {
-				cam_rot = getCloser(cam_rot, 1);
+				cam_rot = Package.getCloser(cam_rot, 1);
 			}
 		}
 		// Display camera
 		camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
-	}
-
-	// Fonction qui rapproche une variable d’une cible en divisant la distance
-	// par deux.
-	private float getCloser(float var, float target) {
-		float delta = var - target;
-		if (abs(delta) <= 10) {
-			return target;
-		} else {
-			var -= delta / 2;
-			return var;
-		}
 	}
 
 	private void playGame() {
@@ -113,8 +119,31 @@ public class Game extends PApplet {
 			mover.checkEdges();
 			mover.update(rotate_z, rotate_x);
 		} else {
+			// We are in edit mode
 			rotate_x = 0;
 			rotate_z = 0;
+
+			if (editable) {
+
+				pushMatrix();
+
+				// On va corriger la position 3D de la souris par rapport à où
+				// elle pointe avec viewTransform
+				edit_x = (mouseY - height / 2) * viewTransform;
+				edit_z = -(mouseX - width / 2) * viewTransform;
+				translate(edit_x, 0, edit_z);
+
+				if (collides(cylinderSize, edit_x, edit_z)) {
+					fill(color(170, 40, 40));
+				} else {
+					fill(color(40, 170, 40));
+				}
+
+				Cylinder cursorCylinder = new Cylinder(cylinderSize, 20, this);
+				cursorCylinder.draw();
+
+				popMatrix();
+			}
 		}
 
 		rotateX(rotate_x);
@@ -124,11 +153,40 @@ public class Game extends PApplet {
 		fill(color(167, 219, 216));
 		box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
+		// Display cylinders
+		fill(color(105, 210, 231));
+		for (PVector bump : bumps) {
+			pushMatrix();
+			translate(bump.x, 0, bump.y);
+			(new Cylinder(cylinderSize, 20, this)).draw();
+			popMatrix();
+		}
+
 		// Display ball
 		fill(color(224, 228, 204));
 		mover.display();
 
 		popMatrix();
+
+	}
+
+	// Vérifie qu’on puisse poser le cylindre (pas en dehors du terrain, ou sur
+	// la balle)
+	private boolean collides(float cylinderSize, float x, float z) {
+
+		float n = x + cylinderSize;
+		float s = x - cylinderSize;
+		float e = z + cylinderSize;
+		float w = z - cylinderSize;
+
+		boolean touchBall = true;
+		// (e < mover.x() || w > mover.x())
+		// && (n < mover.z() || s > mover.z());
+
+		boolean outsidePlate = n > PLATE_WIDTH / 2 || s < -PLATE_WIDTH / 2
+				|| w < -PLATE_WIDTH / 2 || e > PLATE_WIDTH / 2;
+
+		return touchBall && outsidePlate;
 	}
 
 	/*
@@ -155,6 +213,7 @@ public class Game extends PApplet {
 	public void keyReleased() {
 		if (key == CODED && keyCode == SHIFT) {
 			paused = false;
+			editable = false;
 		}
 	}
 
@@ -171,6 +230,14 @@ public class Game extends PApplet {
 				rotation_increment = rotation_increment - 0.01f;
 			if (tiltSpeed >= 0.2f)
 				tiltSpeed = tiltSpeed - 0.1f;
+		}
+	}
+
+	// Add cylinders
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (editable) {
+			bumps.add(new PVector(edit_x, edit_z));
 		}
 	}
 }

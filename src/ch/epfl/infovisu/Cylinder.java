@@ -9,19 +9,20 @@ public class Cylinder {
 	private final static int CYLINDER_RESOLUTION = 20;
 
 	private float height;
-	//private float baseSize;
+	// private float baseSize;
 	private PApplet applet;
-
 	private PShape cylinder = new PShape();
+	private float baseSize;
 
 	public Cylinder(PApplet applet) {
 		this(CYLINDER_HEIGHT, CYLINDER_BASE_SIZE, applet);
 	}
 
 	public Cylinder(float height, float baseSize, PApplet applet) {
+		this.baseSize = baseSize;
 		this.applet = applet;
-		this.height = height;
-		//this.baseSize = baseSize;
+		this.height = -height;
+		// this.baseSize = baseSize;
 
 		float angle;
 		float[] x = new float[CYLINDER_RESOLUTION + 1];
@@ -66,7 +67,10 @@ public class Cylinder {
 	}
 
 	public void draw() {
-		applet.translate(applet.mouseX, applet.mouseY, 0);
 		applet.shape(cylinder);
 	}
+
+	public float getSize() {
+		return baseSize;
+	}	
 }

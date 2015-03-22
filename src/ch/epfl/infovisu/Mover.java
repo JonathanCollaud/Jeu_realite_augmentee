@@ -62,4 +62,12 @@ public class Mover {
 			ballVelocity.z *= -1;
 		}
 	}
+	
+	public float x() {
+		return ballPosition.x;
+	}
+	
+	public float z() {
+		return ballPosition.z;
+	}
 }
