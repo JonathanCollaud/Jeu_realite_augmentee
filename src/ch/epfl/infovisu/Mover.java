@@ -46,8 +46,7 @@ public class Mover {
 	}
 
 	public void display() {
-		applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);
-		applet.fill(applet.color(224, 228, 204));
+		applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);		
 		applet.sphere(BALL_SIZE);
 	}
 
