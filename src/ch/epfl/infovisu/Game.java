@@ -44,7 +44,7 @@ public class Game extends PApplet {
 	private List<PVector> bumps = new ArrayList<>();
 	private float edit_x = 0;
 	private float edit_z = 0;
-	float cylinderSize = 20;
+	float cylinderHeight = 20;
 
 	@Override
 	public void setup() {
@@ -61,7 +61,7 @@ public class Game extends PApplet {
 		ambientLight(AMBI, AMBI, AMBI);
 		background(BG_COLOR);
 
-		// Gère le déplacement de la balle et de la plate
+		// Gï¿½re le dï¿½placement de la balle et de la plate
 		playGame();
 
 		// Information text
@@ -71,7 +71,7 @@ public class Game extends PApplet {
 		text("tilt speed : " + tiltSpeed, 500, 35);
 	}
 
-	// Déplace la caméra si le jeu est mis sur pause avec shift
+	// Dï¿½place la camï¿½ra si le jeu est mis sur pause avec shift
 	private void displayCamera() {
 		if (!paused) {
 			if (cam_pos == BASE_CAM_POSITION && cam_alt == BASE_CAM_ALTITUDE
@@ -129,13 +129,13 @@ public class Game extends PApplet {
 
 				pushMatrix();
 
-				// On va corriger la position 3D de la souris par rapport à où
+				// On va corriger la position 3D de la souris par rapport ï¿½ oï¿½
 				// elle pointe avec viewTransform
 				edit_x = (mouseY - height / 2) * viewTransform;
 				edit_z = -(mouseX - width / 2) * viewTransform;
 				translate(edit_x, 0, edit_z);
 
-				if (collides(cylinderSize, edit_x, edit_z)) {
+				if (collides(cylinderHeight, edit_x, edit_z)) {
 					fill(color(170, 40, 40));
 					editable = false;
 				} else {
@@ -143,7 +143,7 @@ public class Game extends PApplet {
 					editable = true;
 				}
 
-				Cylinder cursorCylinder = new Cylinder(cylinderSize, 20, this);
+				Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20, this);
 				cursorCylinder.draw();
 
 				popMatrix();
@@ -162,7 +162,7 @@ public class Game extends PApplet {
 		for (PVector bump : bumps) {
 			pushMatrix();
 			translate(bump.x, 0, bump.y);
-			(new Cylinder(cylinderSize, 20, this)).draw();
+			(new Cylinder(cylinderHeight, 20, this)).draw();
 			popMatrix();
 		}
 
@@ -178,7 +178,7 @@ public class Game extends PApplet {
 		return bumps;
 	}
 
-	// Vérifie qu’on puisse poser le cylindre (pas en dehors du terrain, ou sur
+	// Vï¿½rifie quï¿½on puisse poser le cylindre (pas en dehors du terrain, ou sur
 	// la balle)
 	private boolean collides(float cylinderSize, float x, float z) {
 
