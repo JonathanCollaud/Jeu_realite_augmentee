@@ -1,7 +1,5 @@
 import java.util.List;
 
-import processing.core.*;
-
 class Mover {
 
   private static final float GRAVITY_CONSTANT = 10f;
