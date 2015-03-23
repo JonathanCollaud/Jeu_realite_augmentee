@@ -1,4 +1,4 @@
-class Package {
+static class Package {
 
   // Fonction qui rapproche une variable d�une cible en divisant la distance
   // par deux.
