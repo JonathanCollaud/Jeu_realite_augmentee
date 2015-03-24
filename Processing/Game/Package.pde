@@ -1,6 +1,6 @@
 static class Package {
 
-  // Fonction qui rapproche une variable d�une cible en divisant la distance
+  // Fonction qui rapproche une variable d'une cible en divisant la distance
   // par deux.
   public static float getCloser(float var, float target) {
     float delta = var - target;

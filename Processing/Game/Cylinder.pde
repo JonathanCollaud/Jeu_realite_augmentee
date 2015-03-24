@@ -27,6 +27,8 @@ class Cylinder {
       z[i] = (float) Math.cos(angle) * baseRadius;
     }
 
+
+    drawCap(x, z, 0);
     drawSides(x, z);
     drawCap(x, z, -height);
 

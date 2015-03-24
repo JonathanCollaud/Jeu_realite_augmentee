@@ -2,9 +2,9 @@ import java.util.List;
 
 class Mover {
 
-  private static final float GRAVITY_CONSTANT = 10f;
-  private static final float BALL_MASS = 1f;
-  private static final float BALL_SIZE = 8f;
+  private static final float GRAVITY_CONSTANT = 9.81;
+  private static final float BALL_MASS = 1;
+  private static final float BALL_SIZE = 8;
 
   // Ball positioning
   private float normalForce = 1f;
@@ -64,7 +64,7 @@ class Mover {
   }
 
   public void checkCylinderCollision() {
-    List<PVector> bumps = applet.getBumps();    
+    List<PVector> bumps = getBumps();    
     for (PVector bump : bumps) {      
       if (bump.dist(ballPosition) <= 24) {        
         PVector normal = PVector.sub(ballPosition, bump);  
