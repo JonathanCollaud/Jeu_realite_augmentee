@@ -49,7 +49,7 @@ public void setup() {
 }
 
 public void draw() {
-  // Camera et éclairage
+  // Caméra et éclairage
   displayCamera();
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
@@ -184,25 +184,15 @@ private boolean collides(float cylinderRadius, float x, float z) {
   return touchBall && outsidePlate;
 }
 
-/*
- * Interactions
- */
+
+// shift => mode d'insertion de cylindres
 public void keyPressed() {
-  if (key == CODED) {
-    // Plate rotation
-    if (keyCode == LEFT) {
-      rotate_y += rotation_increment;
-    } else if (keyCode == RIGHT) {
-      rotate_y -= rotation_increment;
-    }
-    // Insert cylinder mode
-    else if (keyCode == SHIFT) {
+  if (key == CODED && keyCode == SHIFT) {
       paused = true;
-    }
   }
 }
 
-// Quit insert cylinder mode
+// arrêt de mode édition en cas de touche shift relachée
 public void keyReleased() {
   if (key == CODED && keyCode == SHIFT) {
     paused = false;
@@ -210,7 +200,7 @@ public void keyReleased() {
   }
 }
 
-// Plate tilt
+// modification des valeurs en cas de rotation de la molette
 public void mouseWheel(MouseEvent e) {
   if (e.getCount() < 0) { // mouse wheel up
     if (rotation_increment <= 0.25)
@@ -225,7 +215,7 @@ public void mouseWheel(MouseEvent e) {
   }
 }
 
-// Add cylinders
+// Ajout des cylindres en cas de clic de souris
 public void mouseClicked(MouseEvent e) {
   if (editable) {
     bumps.add(new PVector(edit_x, edit_z, 0));
