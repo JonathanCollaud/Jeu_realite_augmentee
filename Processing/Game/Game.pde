@@ -55,11 +55,11 @@ public void setup() {
 
 public void draw() {
   // Caméra et éclairage
-  displayCamera();
+  //displayCamera();
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
-  
+
   drawBottomRect();
   image(bottomRect, 0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT);
 
@@ -68,28 +68,26 @@ public void draw() {
 
   // Texte d'information
   textSize(15);
-  text("rotation : " + Math.round(rotation_increment * 100.0) / 100.0,
-      500, 15);
   text("tilt speed : " + tiltSpeed, 500, 35);
 }
 
 private void displayCamera() {
   if (paused) {
     //si la caméra est en position d'édition => on peut poser les cylindres
-    if(cam_pos == 0 && cam_alt == PAUSE_HEIGHT && cam_rot == 1)
+    if (cam_pos == 0 && cam_alt == PAUSE_HEIGHT && cam_rot == 1)
       editable = true;
-      //sinon on s'en approche
-     else {
+    //sinon on s'en approche
+    else {
       cam_pos = Package.getCloser(cam_pos, 0);
       cam_alt = Package.getCloser(cam_alt, PAUSE_HEIGHT);
       cam_rot = Package.getCloser(cam_rot, 1);
-     }
     }
+  }
   //si pas en pause, on se met en position de base
   else {
-        cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
-        cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
-        cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
+    cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
+    cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
+    cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
   }
   // positionne la caméra
   camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
@@ -103,8 +101,8 @@ private void playGame() {
     // rotation de la plaque
     rotateY(rotate_y);
 
-    rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
-        -MAX_ROTATION);
+    rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION, 
+    -MAX_ROTATION);
     rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION, -MAX_ROTATION);
 
     // Balle
@@ -162,7 +160,6 @@ private void playGame() {
   mover.display();
 
   popMatrix();
-
 }
 
 public List<PVector> getBumps() {
@@ -183,9 +180,9 @@ private boolean collides(float cylinderRadius, float x, float z) {
   // && (n < mover.z() || s > mover.z());
 
   boolean outsidePlate =  n > PLATE_WIDTH / 2 ||
-                          s < -PLATE_WIDTH / 2 ||
-                          w < -PLATE_WIDTH / 2 ||
-                          e > PLATE_WIDTH / 2;
+    s < -PLATE_WIDTH / 2 ||
+    w < -PLATE_WIDTH / 2 ||
+    e > PLATE_WIDTH / 2;
 
   return touchBall && outsidePlate;
 }
@@ -194,7 +191,7 @@ private boolean collides(float cylinderRadius, float x, float z) {
 // shift => mode d'insertion de cylindres
 public void keyPressed() {
   if (key == CODED && keyCode == SHIFT) {
-      paused = true;
+    paused = true;
   }
 }
 
@@ -227,8 +224,15 @@ public void mouseClicked(MouseEvent e) {
 // Graphics drawing
 void drawBottomRect() {
   bottomRect.beginDraw();
-  background(160,200,60);
+  background(255, 255, 200);
   bottomRect.rect(0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
   bottomRect.endDraw();
+
+  PGraphics topView = createGraphics(BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10, P2D);
+  topView.beginDraw();
+  topView.fill(0, 0, 255);
+  topView.rect(5, 5, BOTTOM_RECT_HEIGHT, BOTTOM_RECT_HEIGHT);
+  topView.endDraw();
+  image(topView, 5, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT+5);
 }
 
