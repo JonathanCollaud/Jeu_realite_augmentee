@@ -69,6 +69,7 @@ class Mover {
       if (bump.dist(ballPosition) <= 24) {        
         PVector normal = PVector.sub(ballPosition, bump);  
         normal.normalize();
+        normal.z=0;
         
         Float dotProd = PVector.dot(ballVelocity, normal)*2;
         PVector multVect = PVector.mult(normal, dotProd);

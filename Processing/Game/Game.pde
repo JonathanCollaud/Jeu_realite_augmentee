@@ -170,19 +170,21 @@ public List<PVector> getBumps() {
 
 // V�rifie qu�on puisse poser le cylindre (pas en dehors du terrain, ou sur
 // la balle)
-private boolean collides(float cylinderSize, float x, float z) {
+private boolean collides(float cylinderRadius, float x, float z) {
 
-  float n = x + cylinderSize;
-  float s = x - cylinderSize;
-  float e = z + cylinderSize;
-  float w = z - cylinderSize;
+  float n = x + cylinderRadius;
+  float s = x - cylinderSRadius;
+  float e = z + cylinderRadius;
+  float w = z - cylinderRadius;
 
   boolean touchBall = true;
   // (e < mover.x() || w > mover.x())
   // && (n < mover.z() || s > mover.z());
 
-  boolean outsidePlate = n > PLATE_WIDTH / 2 || s < -PLATE_WIDTH / 2
-      || w < -PLATE_WIDTH / 2 || e > PLATE_WIDTH / 2;
+  boolean outsidePlate =  n > PLATE_WIDTH / 2 ||
+                          s < -PLATE_WIDTH / 2 ||
+                          w < -PLATE_WIDTH / 2 ||
+                          e > PLATE_WIDTH / 2;
 
   return touchBall && outsidePlate;
 }
@@ -232,7 +234,7 @@ public void mouseWheel(MouseEvent e) {
 // Add cylinders
 public void mouseClicked(MouseEvent e) {
   if (editable) {
-    bumps.add(new PVector(edit_x, edit_z));
+    bumps.add(new PVector(edit_x, edit_z, 0));
   }
 }
 
