@@ -19,10 +19,9 @@ class Mover {
   private PVector friction = new PVector(0, 0, 0);
   private Game applet;
 
-  public Mover(float plate_width, float plate_height, Game applet) {
+  public Mover(float plate_width, float plate_height) {
     this.plate_width = plate_width;
     this.plate_height = plate_height;
-    this.applet = applet;
   }
 
   public void update(float rotate_z, float rotate_x) {
@@ -44,8 +43,8 @@ class Mover {
   }
 
   public void display() {
-    applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);
-    applet.sphere(BALL_SIZE);
+    translate(ballPosition.x, ballPosition.y, ballPosition.z);
+    sphere(BALL_SIZE);
   }
 
   public void checkEdges() {

@@ -15,8 +15,8 @@ private static final float PLATE_HEIGHT = 5;
 private final float PAUSE_HEIGHT = -300;
 
 private final float BASE_CAM_ROTATION = 0;
-private final float BASE_CAM_ALTITUDE = -160;
-private final float BASE_CAM_POSITION = -PLATE_WIDTH;
+private final float BASE_CAM_ALTITUDE = -256;
+private final float BASE_CAM_POSITION = -2*PLATE_WIDTH;
 
 /**
  * Shared var
@@ -38,10 +38,14 @@ private float edit_x = 0;
 private float edit_z = 0;
 private float cylinderHeight = 20;
 
+// Graphics
+private PGraphics bottomRect;
+
 public void setup() {
   size(800, 600, P3D);
   noStroke(); // désactive l'affichage des lignes extérieures
-  mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT, this);
+  mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT);
+  bottomRect = createGraphics(600, 100, P2D);
 }
 
 public void draw() {
@@ -50,6 +54,8 @@ public void draw() {
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
+  drawMySurface();
+  image(bottomRect, 0, 0);
 
   // Gère le déplacement de la balle et de la plaque
   playGame();
@@ -157,7 +163,7 @@ public List<PVector> getBumps() {
   return bumps;
 }
 
-// V�rifie qu�on puisse poser le cylindre (pas en dehors du terrain, ou sur
+// Vérifie qu'on puisse poser le cylindre (pas en dehors du terrain, ou sur
 // la balle)
 private boolean collides(float cylinderRadius, float x, float z) {
 
@@ -197,7 +203,6 @@ public void keyPressed() {
 }
 
 // Quit insert cylinder mode
-@Override
 public void keyReleased() {
   if (key == CODED && keyCode == SHIFT) {
     paused = false;
@@ -227,4 +232,11 @@ public void mouseClicked(MouseEvent e) {
   }
 }
 
+// Graphics drawing
+void drawMySurface() {
+  bottomRect.beginDraw();
+  bottomRect.fill(0);
+  bottomRect.rect(0, 0, 100, 600);
+  bottomRect.endDraw();
+}
 
