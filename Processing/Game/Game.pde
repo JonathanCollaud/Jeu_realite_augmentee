@@ -34,7 +34,6 @@ private float rotate_z = 0;
 private float cam_rot = BASE_CAM_ROTATION;
 private float cam_pos = BASE_CAM_POSITION;
 private float cam_alt = BASE_CAM_ALTITUDE;
-private float rotation_increment = 0.1f;
 private float tiltSpeed = 1f;
 private Mover mover;
 private List<PVector> bumps = new ArrayList();
@@ -99,21 +98,21 @@ private void displayCamera() {
 private void playGame() {
   pushMatrix();
 
-  // Animated stuff
+  // Animations
   if (!paused) {
-    // Plate rotation
+    // rotation de la plaque
     rotateY(rotate_y);
 
     rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
         -MAX_ROTATION);
     rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION, -MAX_ROTATION);
 
-    // Ball
+    // Balle
     mover.checkEdges();
     mover.checkCylinderCollision();
     mover.update(rotate_z, rotate_x);
   } else {
-    // We are in edit mode
+    // mode d'édition
     rotate_x = 0;
     rotate_z = 0;
 
@@ -121,7 +120,7 @@ private void playGame() {
 
       pushMatrix();
 
-      // On va corriger la position 3D de la souris par rapport � o�
+      // On va corriger la position 3D de la souris par rapport à où
       // elle pointe avec viewTransform
       edit_x = (mouseY - height / 2) * viewTransform;
       edit_z = -(mouseX - width / 2) * viewTransform;
@@ -145,11 +144,11 @@ private void playGame() {
   rotateX(rotate_x);
   rotateZ(rotate_z);
 
-  // Display plate
+  // Affichage de la plaque
   fill(color(167, 219, 216));
   box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
-  // Display cylinders
+  // Affichage des cylindres
   fill(color(105, 210, 231));
   for (PVector bump : bumps) {
     pushMatrix();
@@ -158,7 +157,7 @@ private void playGame() {
     popMatrix();
   }
 
-  // Display ball
+  // Affichage de la balle
   fill(color(224, 228, 204));
   mover.display();
 
@@ -207,19 +206,15 @@ public void keyReleased() {
   }
 }
 
-// modification des valeurs en cas de rotation de la molette
+// modification de la vitesse de rotation en cas de rotation de la molette
 public void mouseWheel(MouseEvent e) {
-  if (e.getCount() < 0) { // mouse wheel up
-    if (rotation_increment <= 0.25)
-      rotation_increment = rotation_increment + 0.01f;
+  if (e.getCount() < 0) { // rotation de la molette en haut
     if (tiltSpeed <= 1.5f)
-      tiltSpeed = tiltSpeed + 0.1f;
-  } else { // mouse wheel down
-    if (rotation_increment >= 0.2)
-      rotation_increment = rotation_increment - 0.01f;
+      tiltSpeed = tiltSpeed + 0.1f;  //vitesse de rotation
+  } 
+  else // rotation de la molette en bas
     if (tiltSpeed >= 0.5f)
       tiltSpeed = tiltSpeed - 0.1f;
-  }
 }
 
 // Ajout des cylindres en cas de clic de souris
