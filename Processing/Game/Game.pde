@@ -4,8 +4,8 @@ import java.util.List;
 /**
  * Global parameters
  */
-private static final float AMBI = 220;
-private static final float BG_COLOR = 255;
+private static final float AMBI = 220;     //luminosité (sur 255)
+private static final float BG_COLOR = 255; //coleur du fond (nuance de gris, sur 255)
 
 private static final float MAX_ROTATION = radians(60);
 
@@ -40,57 +40,46 @@ private float cylinderHeight = 20;
 
 public void setup() {
   size(800, 600, P3D);
-  noStroke(); // disable the outline
+  noStroke(); // désactive l'affichage des lignes extérieures
   mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT, this);
 }
 
 public void draw() {
-  // Camera and lighting
+  // Camera et éclairage
   displayCamera();
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
 
-  // G�re le d�placement de la balle et de la plate
+  // Gère le déplacement de la balle et de la plaque
   playGame();
 
-  // Information text
+  // Texte d'information
   textSize(15);
   text("rotation : " + Math.round(rotation_increment * 100.0) / 100.0,
       500, 15);
   text("tilt speed : " + tiltSpeed, 500, 35);
 }
 
-// D�place la cam�ra si le jeu est mis sur pause avec shift
 private void displayCamera() {
-  if (!paused) {
-    if (cam_pos == BASE_CAM_POSITION && cam_alt == BASE_CAM_ALTITUDE
-        && cam_rot == BASE_CAM_ROTATION) {
-      // si tout est en place on peut ajouter des cylindres
+  if (paused) {
+    //si la caméra est en position d'édition => on peut poser les cylindres
+    if(cam_pos == 0 && cam_alt == PAUSE_HEIGHT && cam_rot == 1)
       editable = true;
-    } else {
-      if (cam_pos != BASE_CAM_POSITION) {
-        cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
-      }
-      if (cam_alt != BASE_CAM_ALTITUDE) {
-        cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
-      }
-      if (cam_rot != BASE_CAM_ROTATION) {
-        cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
-      }
-    }
-  } else {
-    if (cam_pos != 0) {
+      //sinon on s'en approche
+     else {
       cam_pos = Package.getCloser(cam_pos, 0);
-    }
-    if (cam_alt != PAUSE_HEIGHT) {
       cam_alt = Package.getCloser(cam_alt, PAUSE_HEIGHT);
-    }
-    if (cam_rot != 1) {
       cam_rot = Package.getCloser(cam_rot, 1);
+     }
     }
+  //si pas en pause, on se met en position de base
+  else {
+        cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
+        cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
+        cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
   }
-  // Display camera
+  // positionne la caméra
   camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
 }
 
@@ -173,7 +162,7 @@ public List<PVector> getBumps() {
 private boolean collides(float cylinderRadius, float x, float z) {
 
   float n = x + cylinderRadius;
-  float s = x - cylinderSRadius;
+  float s = x - cylinderRadius;
   float e = z + cylinderRadius;
   float w = z - cylinderRadius;
 
