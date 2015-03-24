@@ -4,6 +4,10 @@ import java.util.List;
 /**
  * Global parameters
  */
+private static final int WINDOW_WIDTH = 800;
+private static final int WINDOW_HEIGHT = 600;
+private static final int BOTTOM_RECT_HEIGHT = 100;
+
 private static final float AMBI = 220;     //luminosité (sur 255)
 private static final float BG_COLOR = 255; //coleur du fond (nuance de gris, sur 255)
 
@@ -39,13 +43,15 @@ private float edit_z = 0;
 private float cylinderHeight = 20;
 
 // Graphics
+private PGraphics gameWindow;
 private PGraphics bottomRect;
 
 public void setup() {
-  size(800, 600, P3D);
+  size(WINDOW_WIDTH, WINDOW_HEIGHT, P3D);
   noStroke(); // désactive l'affichage des lignes extérieures
   mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT);
-  bottomRect = createGraphics(600, 100, P2D);
+  gameWindow = createGraphics(WINDOW_WIDTH, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, P2D);
+  bottomRect = createGraphics(WINDOW_WIDTH, BOTTOM_RECT_HEIGHT, P2D);
 }
 
 public void draw() {
@@ -54,8 +60,9 @@ public void draw() {
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
-  drawMySurface();
-  image(bottomRect, 0, 0);
+  
+  drawBottomRect();
+  image(bottomRect, 0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT);
 
   // Gère le déplacement de la balle et de la plaque
   playGame();
@@ -223,10 +230,10 @@ public void mouseClicked(MouseEvent e) {
 }
 
 // Graphics drawing
-void drawMySurface() {
+void drawBottomRect() {
   bottomRect.beginDraw();
-  bottomRect.fill(0);
-  bottomRect.rect(0, 0, 100, 600);
+  background(160,200,60);
+  bottomRect.rect(0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
   bottomRect.endDraw();
 }
 
