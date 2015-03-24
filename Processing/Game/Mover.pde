@@ -77,11 +77,11 @@ class Mover {
     }      
   }
 
-  public float x() {
+  public float ballX() {
     return ballPosition.x;
   }
 
-  public float z() {
+  public float ballZ() {
     return ballPosition.z;
   }
 }

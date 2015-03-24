@@ -28,22 +28,29 @@ private final float BASE_CAM_POSITION = -2*PLATE_WIDTH;
 private boolean paused = false;
 private boolean editable = false;
 private float viewTransform = PAUSE_HEIGHT / 520;
+
 private float rotate_x = 0;
 private float rotate_y = 0;
 private float rotate_z = 0;
+
 private float cam_rot = BASE_CAM_ROTATION;
 private float cam_pos = BASE_CAM_POSITION;
 private float cam_alt = BASE_CAM_ALTITUDE;
+
 private float tiltSpeed = 1f;
+
 private Mover mover;
 private List<PVector> bumps = new ArrayList();
+
 private float edit_x = 0;
 private float edit_z = 0;
+
 private float cylinderHeight = 20;
 
 // Graphics
 private PGraphics gameWindow;
 private PGraphics bottomRect;
+private PGraphics topView;
 
 public void setup() {
   size(WINDOW_WIDTH, WINDOW_HEIGHT, P3D);
@@ -51,17 +58,20 @@ public void setup() {
   mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT);
   gameWindow = createGraphics(WINDOW_WIDTH, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, P2D);
   bottomRect = createGraphics(WINDOW_WIDTH, BOTTOM_RECT_HEIGHT, P2D);
+  topView = createGraphics(BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10, P2D);
 }
 
 public void draw() {
   // Caméra et éclairage
-  //displayCamera();
+  displayCamera();
   directionalLight(10, 10, 10, 1, -1, -1);
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
-
+  
   drawBottomRect();
   image(bottomRect, 0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT);
+  drawTopView();
+  image(topView, 5, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT+5);
 
   // Gère le déplacement de la balle et de la plaque
   playGame();
@@ -227,12 +237,34 @@ void drawBottomRect() {
   background(255, 255, 200);
   bottomRect.rect(0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
   bottomRect.endDraw();
+}
 
-  PGraphics topView = createGraphics(BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10, P2D);
+void drawTopView() {
   topView.beginDraw();
+  topView.noStroke();
+  
+  // Draw the plate
   topView.fill(0, 0, 255);
-  topView.rect(5, 5, BOTTOM_RECT_HEIGHT, BOTTOM_RECT_HEIGHT);
+  topView.rect(0, 0, BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10);
+  
+  //Draw the ball
+  topView.fill(255, 0, 0);
+  topView.ellipse(
+    (BOTTOM_RECT_HEIGHT-10)/2 + mover.ballX()*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    (BOTTOM_RECT_HEIGHT-10)/2 + mover.ballZ()*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    mover.BALL_SIZE*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    mover.BALL_SIZE*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
+    
+  //Draw the bumps
+  topView.fill(0, 255, 0);
+  for(PVector bump : bumps) {
+    topView.ellipse(
+      (BOTTOM_RECT_HEIGHT-10)/2 + bump.x*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+      (BOTTOM_RECT_HEIGHT-10)/2 + bump.z*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+      50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+      50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
+  }
+  
   topView.endDraw();
-  image(topView, 5, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT+5);
 }
 
