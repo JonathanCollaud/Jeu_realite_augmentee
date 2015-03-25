@@ -71,7 +71,7 @@ public void draw() {
   popMatrix();
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
-  
+
   drawBottomRect();
   image(bottomRect, 0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT);
   drawTopView();
@@ -124,33 +124,31 @@ private void playGame() {
     mover.checkCylinderCollision(bumps, BUMPS_RADIUS);
     mover.update(rotate_z, rotate_x);
   } else {
-    // mode d'édition
+    // On met la plaque à plat
     rotate_x = 0;
     rotate_z = 0;
 
-    if (paused) {
+    pushMatrix();
 
-      pushMatrix();
+    // On va corriger la position 3D de la souris par rapport à où
+    // elle pointe avec viewTransform
+    edit_x = (mouseY - height / 2) * viewTransform;
+    edit_z = -(mouseX - width / 2) * viewTransform;
 
-      // On va corriger la position 3D de la souris par rapport à où
-      // elle pointe avec viewTransform
-      edit_x = (mouseY - height / 2) * viewTransform;
-      edit_z = -(mouseX - width / 2) * viewTransform;
-      translate(edit_x, 0, edit_z);
-
-      if (collides(cylinderHeight, edit_x, edit_z)) {
-        fill(color(170, 40, 40));
-        editable = false;
-      } else {
-        fill(color(40, 170, 40));
-        editable = true;
-      }
-
-      Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20);
-      cursorCylinder.draw();
-
-      popMatrix();
+    // Vérifie qu’on puisse poser le cylindre
+    if (mouseObjectCollides(cylinderHeight, new PVector(edit_x, 0, edit_z))) {
+      fill(color(170, 40, 40)); // Curseur vert
+      editable = false;
+    } else {
+      fill(color(40, 170, 40)); // Curseur rouge
+      editable = true;
     }
+
+    translate(edit_x, 0, edit_z);
+    Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20);
+    cursorCylinder.draw();
+
+    popMatrix();
   }
 
   rotateX(rotate_x);
@@ -178,22 +176,21 @@ private void playGame() {
 
 // Vérifie qu'on puisse poser le cylindre (pas en dehors du terrain, ou sur
 // la balle)
-private boolean collides(float cylinderRadius, float x, float z) {
+private boolean mouseObjectCollides(float cylinderRadius, PVector objectPosition) {
+  // Vérifie si le cylindre est sur la balle
+  boolean touchBall = mover.checkCollision(objectPosition, cylinderRadius);
 
   // Coordonnées des différents cotés du cylindre
-  float n = x + cylinderRadius;
-  float s = x - cylinderRadius;
-  float e = z + cylinderRadius;
-  float w = z - cylinderRadius;
-
-  boolean touchBall = false;
-
+  float n = objectPosition.x + cylinderRadius;
+  float s = objectPosition.x - cylinderRadius;
+  float e = objectPosition.z + cylinderRadius;
+  float w = objectPosition.z - cylinderRadius;
   boolean outsidePlate =  n > PLATE_WIDTH / 2 ||
     s < -PLATE_WIDTH / 2 ||
     w < -PLATE_WIDTH / 2 ||
     e > PLATE_WIDTH / 2;
 
-  return touchBall && outsidePlate;
+  return touchBall || outsidePlate;
 }
 
 
@@ -217,10 +214,9 @@ public void mouseWheel(MouseEvent e) {
   if (e.getCount() < 0) { // rotation de la molette en haut
     if (tiltSpeed <= 1.5f)
       tiltSpeed = tiltSpeed + 0.1f;  //vitesse de rotation
-  } 
-  else // rotation de la molette en bas
-    if (tiltSpeed >= 0.5f)
-      tiltSpeed = tiltSpeed - 0.1f;
+  } else // rotation de la molette en bas
+  if (tiltSpeed >= 0.5f)
+    tiltSpeed = tiltSpeed - 0.1f;
 }
 
 // Ajout des cylindres en cas de clic de souris
@@ -241,29 +237,29 @@ void drawBottomRect() {
 void drawTopView() {
   topView.beginDraw();
   topView.noStroke();
-  
+
   // Draw the plate
   topView.fill(0, 0, 255);
   topView.rect(0, 0, BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10);
-  
+
   //Draw the ball
   topView.fill(255, 0, 0);
   topView.ellipse(
-    (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
-    
+  (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+  (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+  mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+  mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
+
   //Draw the bumps
   topView.fill(0, 255, 0);
-  for(PVector bump : bumps) {
+  for (PVector bump : bumps) {
     topView.ellipse(
-      (BOTTOM_RECT_HEIGHT-10)/2 + bump.x*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-      (BOTTOM_RECT_HEIGHT-10)/2 + bump.z*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-      50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-      50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
+    (BOTTOM_RECT_HEIGHT-10)/2 + bump.x*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+    (BOTTOM_RECT_HEIGHT-10)/2 + bump.z*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+    50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+    50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
   }
-  
+
   topView.endDraw();
 }
 
