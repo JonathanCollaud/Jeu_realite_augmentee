@@ -8,13 +8,14 @@ private static final int WINDOW_WIDTH = 800;
 private static final int WINDOW_HEIGHT = 600;
 private static final int BOTTOM_RECT_HEIGHT = 100;
 
-private static final float AMBI = 220;     //luminosité (sur 255)
+private static final float AMBI = 120;     //luminosité (sur 255)
 private static final float BG_COLOR = 255; //coleur du fond (nuance de gris, sur 255)
 
 private static final float MAX_ROTATION = radians(60);
 
 private static final float PLATE_WIDTH = 300;
 private static final float PLATE_HEIGHT = 5;
+private static final float BUMPS_RADIUS = 20;
 
 private final float PAUSE_HEIGHT = -300;
 
@@ -64,7 +65,10 @@ public void setup() {
 public void draw() {
   // Caméra et éclairage
   displayCamera();
-  directionalLight(10, 10, 10, 1, -1, -1);
+  pushMatrix();
+  translate(-10, -10, 10);
+  directionalLight(100, 100, 100, 1, 1, -1);
+  popMatrix();
   ambientLight(AMBI, AMBI, AMBI);
   background(BG_COLOR);
   
@@ -117,7 +121,7 @@ private void playGame() {
 
     // Balle
     mover.checkEdges();
-    mover.checkCylinderCollision();
+    mover.checkCylinderCollision(bumps, BUMPS_RADIUS);
     mover.update(rotate_z, rotate_x);
   } else {
     // mode d'édition
@@ -160,8 +164,8 @@ private void playGame() {
   fill(color(105, 210, 231));
   for (PVector bump : bumps) {
     pushMatrix();
-    translate(bump.x, 0, bump.y);
-    (new Cylinder(cylinderHeight, 20)).draw();
+    translate(bump.x, 0, bump.z);
+    (new Cylinder(cylinderHeight, BUMPS_RADIUS)).draw();
     popMatrix();
   }
 
@@ -172,22 +176,17 @@ private void playGame() {
   popMatrix();
 }
 
-public List<PVector> getBumps() {
-  return bumps;
-}
-
 // Vérifie qu'on puisse poser le cylindre (pas en dehors du terrain, ou sur
 // la balle)
 private boolean collides(float cylinderRadius, float x, float z) {
 
+  // Coordonnées des différents cotés du cylindre
   float n = x + cylinderRadius;
   float s = x - cylinderRadius;
   float e = z + cylinderRadius;
   float w = z - cylinderRadius;
 
-  boolean touchBall = true;
-  // (e < mover.x() || w > mover.x())
-  // && (n < mover.z() || s > mover.z());
+  boolean touchBall = false;
 
   boolean outsidePlate =  n > PLATE_WIDTH / 2 ||
     s < -PLATE_WIDTH / 2 ||
@@ -227,7 +226,7 @@ public void mouseWheel(MouseEvent e) {
 // Ajout des cylindres en cas de clic de souris
 public void mouseClicked(MouseEvent e) {
   if (editable) {
-    bumps.add(new PVector(edit_x, edit_z, 0));
+    bumps.add(new PVector(edit_x, 0, edit_z)); // Troisième coordonnée à 0 pour rester dans le plan
   }
 }
 
@@ -250,10 +249,10 @@ void drawTopView() {
   //Draw the ball
   topView.fill(255, 0, 0);
   topView.ellipse(
-    (BOTTOM_RECT_HEIGHT-10)/2 + mover.ballX()*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    (BOTTOM_RECT_HEIGHT-10)/2 + mover.ballZ()*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    mover.BALL_SIZE*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
-    mover.BALL_SIZE*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
+    (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
     
   //Draw the bumps
   topView.fill(0, 255, 0);
