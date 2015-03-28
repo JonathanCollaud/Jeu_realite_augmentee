@@ -8,11 +8,12 @@ class Cylinder {
   private float baseRadius;
   private PShape cylinder = new PShape();
 
-  public Cylinder() {
-    this(CYLINDER_HEIGHT, CYLINDER_BASE_RADIUS);
-  }
+// Enlevé car pas de PGraphics par défaut!
+//  public Cylinder() {
+//    this(CYLINDER_HEIGHT, CYLINDER_BASE_RADIUS);
+//  }
 
-  public Cylinder(float height, float baseRadius) {
+  public Cylinder(float height, float baseRadius, PGraphics pg) {
     this.baseRadius = baseRadius;
     this.height = -height;
 
@@ -28,37 +29,37 @@ class Cylinder {
     }
 
 
-    drawCap(x, z, 0);
-    drawSides(x, z);
-    drawCap(x, z, -height);
+    drawCap(x, z, 0, pg);
+    drawSides(x, z, pg);
+    drawCap(x, z, -height, pg);
 
   }
 
   // draw the top of the cylinder
-  private void drawCap(float[] x, float[] z, float height) {
-    beginShape(TRIANGLE_FAN);
+  private void drawCap(float[] x, float[] z, float height, PGraphics pg) {
+    pg.beginShape(TRIANGLE_FAN);
     
     // point central
-    vertex(0, height, 0);
+    pg.vertex(0, height, 0);
     
     // pourtour
     for (int i = 0; i < x.length; i++) {
-      vertex(x[i], height, z[i]);
+      pg.vertex(x[i], height, z[i]);
     }
     
-    endShape(CLOSE);
+    pg.endShape(CLOSE);
   }
 
   // draw the border of the cylinder
-  private void drawSides(float[] x, float[] z) {
-    beginShape(QUAD_STRIP);
+  private void drawSides(float[] x, float[] z, PGraphics pg) {
+    pg.beginShape(QUAD_STRIP);
     
     for (int i = 0; i < x.length; i++) {
-      vertex(x[i], 0, z[i]);
-      vertex(x[i], height, z[i]);
+      pg.vertex(x[i], 0, z[i]);
+      pg.vertex(x[i], height, z[i]);
     }
     
-    endShape(CLOSE);
+    pg.endShape(CLOSE);
   }
 
   public void draw() {

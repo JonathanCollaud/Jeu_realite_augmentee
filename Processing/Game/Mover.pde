@@ -2,7 +2,7 @@ import java.util.List;
 
 class Mover {
 
-  private static final float GRAVITY_CONSTANT = 9;
+  private static final float GRAVITY_CONSTANT = 2;
   private static final float BALL_MASS = 1;
   private static final float BALL_RADIUS = 8;
 
@@ -43,9 +43,9 @@ class Mover {
     ballPosition.add(ballVelocity);
   }
 
-  public void display() {
-    translate(ballPosition.x, ballPosition.y, ballPosition.z);
-    sphere(BALL_RADIUS);
+  public void display(PGraphics pg) {
+    pg.translate(ballPosition.x, ballPosition.y, ballPosition.z);
+    pg.sphere(BALL_RADIUS);
   }
 
   public void checkEdges() {

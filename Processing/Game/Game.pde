@@ -5,7 +5,7 @@ import java.util.List;
  * Global parameters
  */
 private static final int WINDOW_WIDTH = 800;
-private static final int WINDOW_HEIGHT = 600;
+private static final int GAME_WINDOW_HEIGHT = 500;
 private static final int BOTTOM_RECT_HEIGHT = 100;
 
 private static final float AMBI = 120;     //luminosité (sur 255)
@@ -20,8 +20,8 @@ private static final float BUMPS_RADIUS = 20;
 private final float PAUSE_HEIGHT = -300;
 
 private final float BASE_CAM_ROTATION = 0;
-private final float BASE_CAM_ALTITUDE = -256;
-private final float BASE_CAM_POSITION = -2*PLATE_WIDTH;
+private final float BASE_CAM_ALTITUDE = -350;
+private final float BASE_CAM_POSITION = -PLATE_WIDTH;
 
 /**
  * Shared var
@@ -54,35 +54,21 @@ private PGraphics bottomRect;
 private PGraphics topView;
 
 public void setup() {
-  size(WINDOW_WIDTH, WINDOW_HEIGHT, P3D);
-  noStroke(); // désactive l'affichage des lignes extérieures
+  size(WINDOW_WIDTH, GAME_WINDOW_HEIGHT + BOTTOM_RECT_HEIGHT, P3D);
   mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT);
-  gameWindow = createGraphics(WINDOW_WIDTH, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, P2D);
+  gameWindow = createGraphics(WINDOW_WIDTH, GAME_WINDOW_HEIGHT, P3D);
   bottomRect = createGraphics(WINDOW_WIDTH, BOTTOM_RECT_HEIGHT, P2D);
   topView = createGraphics(BOTTOM_RECT_HEIGHT-10, BOTTOM_RECT_HEIGHT-10, P2D);
 }
 
 public void draw() {
-  // Caméra et éclairage
-  displayCamera();
-  pushMatrix();
-  translate(-10, -10, 10);
-  directionalLight(100, 100, 100, 1, 1, -1);
-  popMatrix();
-  ambientLight(AMBI, AMBI, AMBI);
-  background(BG_COLOR);
-
-  drawBottomRect();
-  image(bottomRect, 0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT);
-  drawTopView();
-  image(topView, 5, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT+5);
-
   // Gère le déplacement de la balle et de la plaque
-  playGame();
-
-  // Texte d'information
-  textSize(15);
-  text("tilt speed : " + tiltSpeed, 500, 35);
+  drawGameWindow();
+  image(gameWindow, 0, 0);
+  drawBottomRect();
+  image(bottomRect, 0, GAME_WINDOW_HEIGHT);
+  drawTopView();
+  image(topView, 5, GAME_WINDOW_HEIGHT+5);
 }
 
 private void displayCamera() {
@@ -104,19 +90,19 @@ private void displayCamera() {
     cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
   }
   // positionne la caméra
-  camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
+  gameWindow.camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
 }
 
 private void playGame() {
-  pushMatrix();
+  
+  gameWindow.pushMatrix();
 
   // Animations
   if (!paused) {
     // rotation de la plaque
-    rotateY(rotate_y);
+    gameWindow.rotateY(rotate_y);
 
-    rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION, 
-    -MAX_ROTATION);
+    rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION, -MAX_ROTATION);
     rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION, -MAX_ROTATION);
 
     // Balle
@@ -128,7 +114,7 @@ private void playGame() {
     rotate_x = 0;
     rotate_z = 0;
 
-    pushMatrix();
+    gameWindow.pushMatrix();
 
     // On va corriger la position 3D de la souris par rapport à où
     // elle pointe avec viewTransform
@@ -137,48 +123,48 @@ private void playGame() {
 
     // Vérifie qu’on puisse poser le cylindre
     if (mouseObjectCollides(cylinderHeight, new PVector(edit_x, 0, edit_z))) {
-      fill(color(170, 40, 40)); // Curseur vert
+      gameWindow.fill(color(170, 40, 40)); // Curseur vert
       editable = false;
     } else {
-      fill(color(40, 170, 40)); // Curseur rouge
+      gameWindow.fill(color(40, 170, 40)); // Curseur rouge
       editable = true;
     }
 
-    translate(edit_x, 0, edit_z);
-    Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20);
+    gameWindow.translate(edit_x, 0, edit_z);
+    Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20, gameWindow);
     cursorCylinder.draw();
-
-    popMatrix();
+    
+    gameWindow.popMatrix();
   }
 
-  rotateX(rotate_x);
-  rotateZ(rotate_z);
+  gameWindow.rotateX(rotate_x);
+  gameWindow.rotateZ(rotate_z);
 
   // Affichage de la plaque
-  fill(color(167, 219, 216));
-  box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
+  gameWindow.fill(color(167, 219, 216));
+  gameWindow.box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
   // Affichage des cylindres
-  fill(color(105, 210, 231));
+  gameWindow.fill(color(105, 210, 231));
   for (PVector bump : bumps) {
-    pushMatrix();
-    translate(bump.x, 0, bump.z);
-    (new Cylinder(cylinderHeight, BUMPS_RADIUS)).draw();
-    popMatrix();
+    gameWindow.pushMatrix();
+    gameWindow.translate(bump.x, 0, bump.z);
+    (new Cylinder(cylinderHeight, BUMPS_RADIUS, gameWindow)).draw();
+    gameWindow.popMatrix();
   }
 
   // Affichage de la balle
-  fill(color(224, 228, 204));
-  mover.display();
+  gameWindow.fill(color(224, 228, 204));
+  mover.display(gameWindow);
 
-  popMatrix();
+  gameWindow.popMatrix();
 }
 
 // Vérifie qu'on puisse poser le cylindre (pas en dehors du terrain, ou sur
 // la balle)
 private boolean mouseObjectCollides(float cylinderRadius, PVector objectPosition) {
   // Vérifie si le cylindre est sur la balle
-  boolean touchBall = mover.checkCollision(objectPosition, cylinderRadius);
+  boolean touchBump = mover.checkCollision(objectPosition, cylinderRadius);
 
   // Coordonnées des différents cotés du cylindre
   float n = objectPosition.x + cylinderRadius;
@@ -190,7 +176,7 @@ private boolean mouseObjectCollides(float cylinderRadius, PVector objectPosition
     w < -PLATE_WIDTH / 2 ||
     e > PLATE_WIDTH / 2;
 
-  return touchBall || outsidePlate;
+  return touchBump || outsidePlate;
 }
 
 
@@ -227,11 +213,37 @@ public void mouseClicked(MouseEvent e) {
 }
 
 // Graphics drawing
+void drawGameWindow() {
+  // Caméra et éclairage
+  gameWindow.beginDraw();
+  
+  gameWindow.noStroke(); // désactive l'affichage des lignes extérieures
+  gameWindow.directionalLight(100, 100, 100, 1, 1, -1);
+  gameWindow.ambientLight(AMBI, AMBI, AMBI);
+  gameWindow.background(BG_COLOR);
+  
+  pushMatrix();
+  gameWindow.translate(-10, -10, 10);
+  playGame();
+  popMatrix();
+  displayCamera();
+  
+  gameWindow.endDraw();
+}
+
 void drawBottomRect() {
   bottomRect.beginDraw();
-  background(255, 255, 200);
-  bottomRect.rect(0, WINDOW_HEIGHT-BOTTOM_RECT_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
+  bottomRect.background(255, 255, 200);
+  bottomRect.rect(0, GAME_WINDOW_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
   bottomRect.endDraw();
+  
+  // Texte d'information
+  bottomRect.beginDraw();
+  bottomRect.fill(0);
+  bottomRect.textSize(15);
+  bottomRect.text("tilt speed : " + Math.round(tiltSpeed*100)/100.0, BOTTOM_RECT_HEIGHT + 10, 20);
+  bottomRect.endDraw();
+  
 }
 
 void drawTopView() {
@@ -245,17 +257,17 @@ void drawTopView() {
   //Draw the ball
   topView.fill(255, 0, 0);
   topView.ellipse(
-  (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
   (BOTTOM_RECT_HEIGHT-10)/2 + mover.position().z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+  (BOTTOM_RECT_HEIGHT-10)/2 - mover.position().x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
   mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
   mover.BALL_RADIUS*2*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
 
   //Draw the bumps
   topView.fill(0, 255, 0);
   for (PVector bump : bumps) {
-    topView.ellipse(
-    (BOTTOM_RECT_HEIGHT-10)/2 + bump.x*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
-    (BOTTOM_RECT_HEIGHT-10)/2 + bump.z*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+    topView.ellipse( 
+    (BOTTOM_RECT_HEIGHT-10)/2 + bump.z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
+    (BOTTOM_RECT_HEIGHT-10)/2 - bump.x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
     50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
     50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
   }
