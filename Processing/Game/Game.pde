@@ -175,7 +175,6 @@ private boolean mouseObjectCollides(float cylinderRadius, PVector objectPosition
     s < -PLATE_WIDTH / 2 ||
     w < -PLATE_WIDTH / 2 ||
     e > PLATE_WIDTH / 2;
-
   return touchBump || outsidePlate;
 }
 
