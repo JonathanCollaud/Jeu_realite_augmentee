@@ -53,6 +53,8 @@ private PGraphics gameWindow;
 private PGraphics bottomRect;
 private PGraphics topView;
 
+
+
 public void setup() {
   size(WINDOW_WIDTH, GAME_WINDOW_HEIGHT + BOTTOM_RECT_HEIGHT, P3D);
   mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT);

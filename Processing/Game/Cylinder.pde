@@ -7,6 +7,7 @@ class Cylinder {
   private float height;
   private float baseRadius;
   private PShape cylinder = new PShape();
+  private PShape tree = new PShape();
 
 // Enlevé car pas de PGraphics par défaut!
 //  public Cylinder() {
@@ -27,12 +28,14 @@ class Cylinder {
       x[i] = (float) Math.sin(angle) * baseRadius;
       z[i] = (float) Math.cos(angle) * baseRadius;
     }
-
-
+    
     drawCap(x, z, 0, pg);
     drawSides(x, z, pg);
     drawCap(x, z, -height, pg);
-
+    
+    tree = loadShape("simpleTree.obj");
+    tree.scale(40);
+    tree.translate(10, 10, 0);
   }
 
   // draw the top of the cylinder
@@ -63,7 +66,11 @@ class Cylinder {
   }
 
   public void draw() {
-    shape(cylinder);
+    // Comment to draw trees
+    //shape(cylinder);
+    
+    // Comment to draw cylinders
+    shape(tree);
   }
 
   public float getSize() {
