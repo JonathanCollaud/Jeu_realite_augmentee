@@ -6,12 +6,12 @@ public void setup() {
 
 public void draw() {
   PImage result = sobel(img);
-  //image(img, 0, 0);
+  image(img, 0, 0);
   //image(result, 800, 0);
-  hough(result);
+  image(hough(result), 800, 0);
 }
 
-public void hough(PImage edgeImg){
+public PImage hough(PImage edgeImg){
   float discretizationStepsPhi = 0.06f;
   float discretizationStepsR = 2.5f;
   
@@ -33,11 +33,13 @@ public void hough(PImage edgeImg){
           // ...determine here all the lines (r, phi) passing through
           // pixel (x,y), convert (r,phi) to coordinates in the
           // accumulator, and increment accordingly the accumulator.
-          for (float phi = 0; phi < Math.PI; phi += discretizationStepsPhi){
-            float r = (float)(x * Math.cos(phi) + y * Math.sin(phi));
-            int xp = (int)(r * Math.cos(phi));
-            int yp = (int)(r * Math.sin(phi));
-            accumulator[phi * rDim + r]++;
+          for (float phi = 0; phi < phiDim; phi += discretizationStepsPhi){
+            double r = x * Math.cos(phi) + y * Math.sin(phi);
+            r *= Math.signum(r);
+            int xp = (int)Math.round(r * cos(phi));
+            int yp = (int)Math.round(r * sin(phi));
+            println("(" + xp + ";" + yp + ") = (" + r + ";" + phi + ")" );
+            accumulator[yp * edgeImg.width + xp]++;
           }
       }
     }
@@ -48,6 +50,8 @@ public void hough(PImage edgeImg){
     houghImg.pixels[i] = color(min(255, accumulator[i]));
   }
   houghImg.updatePixels();
+  
+  return houghImg;
 }
 
 public PImage convolute(PImage img) {
