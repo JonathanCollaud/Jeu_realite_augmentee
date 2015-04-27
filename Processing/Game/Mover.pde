@@ -2,7 +2,7 @@ import java.util.List;
 
 class Mover {
 
-  private static final float GRAVITY_CONSTANT = 2;
+  private static final float GRAVITY_CONSTANT = 4;
   private static final float BALL_MASS = 1;
   private static final float BALL_RADIUS = 8;
 
@@ -79,7 +79,7 @@ class Mover {
 
   // Créer un rebond pour la balle en fonction d’un objet
   public void bounce(PVector normal, PVector object, float objectSize) {
-    normal.normalize(); // Le de distance vecteur va faire office de vecteur normal
+    normal.normalize(); // Le vecteur de distance va faire office de vecteur normal
 
     float dotProd = PVector.dot(ballVelocity, normal)*2;
     PVector multVect = PVector.mult(normal, dotProd);
@@ -94,7 +94,7 @@ class Mover {
   // Vérifie s’il y a collision entre la balle et un objet
   public boolean checkCollision(PVector distance, float objectSize) {
     // On compare les carrés pour de meilleurs performances (mag à besoin de sqrt())
-    return distance.magSq() <= Math.pow((objectSize + BALL_RADIUS), 2);
+    return distance.magSq() <= (objectSize + BALL_RADIUS) * (objectSize + BALL_RADIUS);
   }
 
   public PVector position() {
