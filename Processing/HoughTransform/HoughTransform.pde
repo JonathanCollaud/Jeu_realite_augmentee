@@ -4,10 +4,9 @@ import processing.video.Capture;
 
 public class HoughTransform extends PApplet {
   Capture cam;
-  PImage img;
   
   public void setup() {
-    size(640, 480);
+    size(640*2, 360);
     String[] cameras = Capture.list();
     println(cameras.length);
     if (cameras.length == 0) {
@@ -18,7 +17,7 @@ public class HoughTransform extends PApplet {
       for (int i = 0; i < cameras.length; i++) {
         println(cameras[i]);
       }
-      cam = new Capture(this, cameras[0]);
+      cam = new Capture(this, cameras[3]);
       cam.start();
     }
   }
@@ -27,9 +26,11 @@ public class HoughTransform extends PApplet {
     if (cam.available() == true) {
       cam.read();
     }
-    img = cam.get();
+    PImage img = cam.get();
     image(img, 0, 0);
-    hough(sobel(img));
+    PImage sobel = sobel(img);
+    image(sobel, 640, 0);
+    hough(sobel);
   }
   
   public void hough(PImage edgeImg){
@@ -55,29 +56,23 @@ public class HoughTransform extends PApplet {
           // ...determine here all the lines (r, phi) passing through
           // pixel (x,y), convert (r,phi) to coordinates in the
           // accumulator, and increment accordingly the accumulator.
-          
           for (accPhi = 0; accPhi < phiDim; accPhi++){
             accR = (int)Math.round((x * Math.cos(accPhi*discStepsPhi) + y * Math.sin(accPhi*discStepsPhi))/discStepsR + (rDim - 1)/2);
             accumulator[(accPhi + 1) * (rDim + 2) + accR + 1]++;
           }
+          
         }
       }
     }
     
-    PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
-    for (int i = 0; i < accumulator.length; i++) {
-      houghImg.pixels[i] = color(min(255, accumulator[i]));
-    }
-    houghImg.updatePixels();
-    
     // Plot the lines
     int x0, y0, x1, y1, x2, y2, x3, y3;
     float r, phi; 
-    for (int idx = 0; idx < accumulator.length; idx++) {
-      if (accumulator[idx] > 300) {
+    for (int i = 0; i < accumulator.length; i++) {
+      if (accumulator[i] > 200) {
         // first, compute back the (r, phi) polar coordinates:
-        accPhi = (int) (idx / (rDim + 2)) - 1;
-        accR = idx - (accPhi + 1) * (rDim + 2) - 1;
+        accPhi = (int) (i / (rDim + 2)) - 1;
+        accR = i - (accPhi + 1) * (rDim + 2) - 1;
         r = (accR - (rDim - 1) * 0.5f) * discStepsR;
         phi = accPhi * discStepsPhi;
         
@@ -115,12 +110,30 @@ public class HoughTransform extends PApplet {
         }
       }
     }
-    
-    image(houghImg, 800, 0);
   }
   
   public PImage sobel(PImage img) {
     int x, y, i, j;
+    int[] acc = new int[img.width * img.height];
+    int imgW = img.width;
+    int imgH = img.height;
+    
+    // Hue detection
+    float pixelHue;
+    float minTreshold = 85;
+    float maxTreshold = 115;
+    for (y = 0; y < imgH; y++) {
+      for (x = 0; x < imgW; x++) {
+        pixelHue = hue(img.pixels[y * imgW + x]);
+        if (minTreshold<pixelHue && pixelHue<maxTreshold) {
+          acc[y * imgW + x] = color(255);
+        } else {
+          acc[y * imgW + x] = color(0);
+        }
+      }
+    } 
+    
+    // Sobel
     float[][] hKernel = { 
       {0, 1, 0},
       {0, 0, 0}, 
@@ -130,60 +143,39 @@ public class HoughTransform extends PApplet {
       {1, 0, -1}, 
       {0, 0, 0}};
     float weight = 1.f;
-    PImage preResult = createImage(img.width, img.height, ALPHA);
-    PImage result = createImage(img.width, img.height, ALPHA);
-    // clear the image
-    for (i = 0; i < img.width * img.height; i++) {
-      result.pixels[i] = color(0);
-    }
     float[] buffer = new float[img.width * img.height];
-    
-    float minTreshold = 105;
-    float maxTreshold = 135;
-    
-    float pixelHue;
-    for (y = 0; y < img.height; y++) {
-      for (x = 0; x < img.width; x++) {
-        pixelHue = hue(img.pixels[y * img.width + x]);
-        if (pixelHue>minTreshold && pixelHue<maxTreshold) {
-          preResult.pixels[y * img.width + x] = color(255);
-        } else {
-          preResult.pixels[y * img.width + x] = color(0);
-        }
-      }
-    }
     
     // *************************************
     // Implement here the double convolution
+    PImage result = createImage(imgW, imgH, ALPHA);
+    
     int kernelHalfSize = hKernel.length/2;
-    int pRW = preResult.width;
-    int pRH = preResult.height;
     float maxBrightness=0;
     float sum_h, sum_v, sum, pixelBrightness;
-    for (y = 1; y < preResult.height - 1; y++) {
-      for (x = 1; x < preResult.width - 1; x++) {
+    for (y = 1; y < imgH - 1; y++) {
+      for (x = 1; x < imgW - 1; x++) {
         sum_h = 0;
         sum_v = 0;
         for (i = -kernelHalfSize; i <= kernelHalfSize; i++) {
           for (j = -kernelHalfSize; j <= kernelHalfSize; j++) {
-              pixelBrightness = brightness(preResult.pixels[(y+j) * pRW + x + i]);
+              pixelBrightness = brightness(acc[(y+j) * imgW+ x + i]);
               sum_h += pixelBrightness*hKernel[i+kernelHalfSize][j+kernelHalfSize];
               sum_v += pixelBrightness*vKernel[i+kernelHalfSize][j+kernelHalfSize];
           }
         }
         sum = sqrt(pow(sum_h, 2) + pow(sum_v, 2));
-        buffer[y * pRW + x] = sum/weight;
+        buffer[y * imgW + x] = sum/weight;
         maxBrightness = (sum>maxBrightness) ? sum : maxBrightness;
       }
     }
     // *************************************
     
-    for (y = 0; y < pRH; y++) {
-      for (x = 0; x < pRW; x++) {
-        if (buffer[y * pRW + x] > maxBrightness * 0.3f) {
-          result.pixels[y * pRW + x] = color(255);
+    for (y = 0; y < imgH; y++) {
+      for (x = 0; x < imgW; x++) {
+        if (buffer[y * imgW + x] > maxBrightness * 0.6f) {
+          result.pixels[y * imgW + x] = color(255);
         } else {
-          result.pixels[y * pRW + x] = color(0);
+          result.pixels[y * imgW + x] = color(0);
         }
       }
     }

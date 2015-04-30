@@ -93,8 +93,6 @@ public void hough(PImage edgeImg){
       }
     }
   }
-  
-  image(houghImg, 800, 0);
 }
 
 public PImage convolute(PImage img) {
