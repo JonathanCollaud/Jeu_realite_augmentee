@@ -2,13 +2,13 @@ import java.util.List;
 
 class Mover {
 
-  private static final float GRAVITY_CONSTANT = 4;
-  private static final float BALL_MASS = 1;
-  private static final float BALL_RADIUS = 8;
+  private static final float GRAVITY_CONSTANT = 1.5f;
+  private static final float BALL_MASS = 1f;
+  private static final float BALL_RADIUS = 8f;
 
   // Ball positioning
-  private float normalForce = 1f;
-  private float mu = 0.1f;
+  private float normalForce = 1.0f;
+  private float mu = 0.01f;
   private float elasticity = 0.7f;
   private float frictionMagnitude = normalForce * mu * BALL_MASS;
   private float plate_width = 1;
@@ -63,8 +63,29 @@ class Mover {
     }
   }
 
-  // Parcours une liste d’objets pour voir si la balle entre en collision avec un
-  public void checkCylinderCollision(List<PVector> bumps, float objectSize) {  
+  // Parcours une liste d’objets pour voir si la balle entre en collision avec un objet
+  public boolean checkObjectsCollision(PVector vector, float objectSize) {  
+    List<PVector> bumps = new ArrayList();
+    bumps.add(vector);
+    return checkObjectsCollision(bumps, objectSize);
+  }
+
+  public boolean checkObjectsCollision(List<PVector> bumps, float objectSize) {  
+    boolean collision = false;
+    for (PVector bump : bumps) {
+      // Création d’un vecteur représantant la distance entre la balle et le bump
+      float deltaX = ballPosition.x - bump.x;
+      float deltaZ = ballPosition.z - bump.z;
+      PVector distance = new PVector(deltaX, 0, deltaZ); // On ne s’intéresse qu’aux coordonnées x et z
+
+      if (checkCollision(distance, objectSize)) return true;
+    }
+    return false;
+  }
+
+  // Fait rebondir la balle
+  public void checkObjectsCollisionAndMove(List<PVector> bumps, float objectSize) {  
+
     for (PVector bump : bumps) {
       // Création d’un vecteur représantant la distance entre la balle et le bump
       float deltaX = ballPosition.x - bump.x;
@@ -85,14 +106,14 @@ class Mover {
     PVector multVect = PVector.mult(normal, dotProd);
     ballVelocity.sub(ballVelocity, multVect);
     ballVelocity.mult(elasticity);
-    
+
     // Actualisation de la position
     ballPosition.x = object.x + (objectSize + BALL_RADIUS) * normal.x;
     ballPosition.z = object.z + (objectSize + BALL_RADIUS) * normal.z;
   }
 
   // Vérifie s’il y a collision entre la balle et un objet
-  public boolean checkCollision(PVector distance, float objectSize) {
+  private boolean checkCollision(PVector distance, float objectSize) {
     // On compare les carrés pour de meilleurs performances (mag à besoin de sqrt())
     return distance.magSq() <= (objectSize + BALL_RADIUS) * (objectSize + BALL_RADIUS);
   }

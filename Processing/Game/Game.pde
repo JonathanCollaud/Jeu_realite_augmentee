@@ -96,7 +96,7 @@ private void displayCamera() {
 }
 
 private void playGame() {
-  
+
   gameWindow.pushMatrix();
 
   // Animations
@@ -109,7 +109,7 @@ private void playGame() {
 
     // Balle
     mover.checkEdges();
-    mover.checkCylinderCollision(bumps, BUMPS_RADIUS);
+    mover.checkObjectsCollisionAndMove(bumps, BUMPS_RADIUS);
     mover.update(rotate_z, rotate_x);
   } else {
     // On met la plaque à plat
@@ -135,7 +135,7 @@ private void playGame() {
     gameWindow.translate(edit_x, 0, edit_z);
     Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20, gameWindow);
     cursorCylinder.draw();
-    
+
     gameWindow.popMatrix();
   }
 
@@ -166,7 +166,7 @@ private void playGame() {
 // la balle)
 private boolean mouseObjectCollides(float cylinderRadius, PVector objectPosition) {
   // Vérifie si le cylindre est sur la balle
-  boolean touchBump = mover.checkCollision(objectPosition, cylinderRadius);
+  boolean touchBump = mover.checkObjectsCollision(objectPosition, cylinderRadius);
 
   // Coordonnées des différents cotés du cylindre
   float n = objectPosition.x + cylinderRadius;
@@ -217,18 +217,18 @@ public void mouseClicked(MouseEvent e) {
 void drawGameWindow() {
   // Caméra et éclairage
   gameWindow.beginDraw();
-  
+
   gameWindow.noStroke(); // désactive l'affichage des lignes extérieures
   gameWindow.directionalLight(100, 100, 100, 1, 1, -1);
   gameWindow.ambientLight(AMBI, AMBI, AMBI);
   gameWindow.background(BG_COLOR);
-  
+
   pushMatrix();
   gameWindow.translate(-10, -10, 10);
   playGame();
   popMatrix();
   displayCamera();
-  
+
   gameWindow.endDraw();
 }
 
@@ -237,14 +237,13 @@ void drawBottomRect() {
   bottomRect.background(255, 255, 200);
   bottomRect.rect(0, GAME_WINDOW_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
   bottomRect.endDraw();
-  
+
   // Texte d'information
   bottomRect.beginDraw();
   bottomRect.fill(0);
   bottomRect.textSize(15);
   bottomRect.text("tilt speed : " + Math.round(tiltSpeed*100)/100.0, BOTTOM_RECT_HEIGHT + 10, 20);
   bottomRect.endDraw();
-  
 }
 
 void drawTopView() {
@@ -268,7 +267,7 @@ void drawTopView() {
   for (PVector bump : bumps) {
     topView.ellipse( 
     (BOTTOM_RECT_HEIGHT-10)/2 + bump.z * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
-    (BOTTOM_RECT_HEIGHT-10)/2 - bump.x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH,
+    (BOTTOM_RECT_HEIGHT-10)/2 - bump.x * (BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
     50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH, 
     50*(BOTTOM_RECT_HEIGHT-10)/PLATE_WIDTH);
   }
