@@ -32,16 +32,49 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
     PImage img = cam.get();
     //PImage img = loadImage("board1.jpg");
     image(img, 0, 0);
-    hough(sobel(img));
+    getIntersections(hough(sobel(img)));
   }
   
-  public void hough(PImage edgeImg){
+  public ArrayList<PVector> getIntersections(ArrayList<PVector> lines){
+    ArrayList<PVector> intersections = new ArrayList<PVector>();
+    
+    for (int i = 0; i < lines.size() - 1; i++) {
+      PVector line1 = lines.get(i);
+    
+      for (int j = i + 1; j < lines.size(); j++) {
+        PVector line2 = lines.get(j);
+        
+        // compute the intersection and add it to 'intersections'
+        float d = cos(line2.y)*sin(line1.y) - cos(line1.y)*sin(line2.y);
+        int x = (int)((line2.x*sin(line1.y) - line1.x*sin(line2.y))/d);
+        int y = (int)((-line2.x*cos(line1.y) + line1.x*cos(line2.y))/d);
+        
+        // draw the intersection
+        fill(255, 128, 0);
+        ellipse(x, y, 10, 10);
+      }
+    }
+    return intersections;
+  }
+  
+  public ArrayList<PVector> hough(PImage edgeImg){
     float discStepsPhi = 0.06f;
     float discStepsR = 2.5f;
     
     // dimensions of the accumulator
     int phiDim = (int) (Math.PI / discStepsPhi);
     int rDim = (int) (((edgeImg.width + edgeImg.height) * 2 + 1) / discStepsR);
+    
+    // pre-compute the sin and cos values
+    float[] tabSin = new float[phiDim];
+    float[] tabCos = new float[phiDim];
+    float ang = 0;
+    float inverseR = 1.f / discStepsR;
+    for (int accPhi = 0; accPhi < phiDim; ang += discStepsPhi, accPhi++) {
+      // we can also pre-multiply by (1/discStepsR) since we need it in the Hough loop
+      tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
+      tabCos[accPhi] = (float) (Math.cos(ang) * inverseR);
+    }
     
     // our accumulator (with a 1 pix margin around)
     accumulator = new int[(phiDim + 2) * (rDim + 2)];
@@ -59,7 +92,7 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
           // pixel (x,y), convert (r,phi) to coordinates in the
           // accumulator, and increment accordingly the accumulator.
           for (accPhi = 0; accPhi < phiDim; accPhi++){
-            accR = (int)Math.round((x * Math.cos(accPhi*discStepsPhi) + y * Math.sin(accPhi*discStepsPhi))/discStepsR + (rDim + 1)/2);
+            accR = (int)Math.round(x * tabCos[accPhi] + y * tabSin[accPhi] + (rDim + 1)/2);
             accumulator[(accPhi + 1) * (rDim + 2) + accR]++;
           }
           
@@ -106,7 +139,8 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
 
    Collections.sort(bestCandidates, this);
     
-    // Plot the lines
+    // Save/plot the lines
+    ArrayList<PVector> result = new ArrayList<PVector>();
     int x0, y0, x1, y1, x2, y2, x3, y3;
     float r, phi; 
     for (i = 0; i < min(nLines, bestCandidates.size()); i++) {
@@ -115,6 +149,8 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
       accR = bestCandidates.get(i) - (accPhi + 1) * (rDim + 2) - 1;
       r = (accR - (rDim - 1) * 0.5f) * discStepsR;
       phi = accPhi * discStepsPhi;
+      
+      result.add(new PVector(r, phi));
       
       // Cartesian equation of a line: y = ax + b
       // in polar, y = (-cos(phi)/sin(phi))x + (r/sin(phi))
@@ -149,6 +185,8 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
           line(x2, y2, x3, y3);
       }
     }
+    
+    return result;
   }
   
   public PImage sobel(PImage img) {
