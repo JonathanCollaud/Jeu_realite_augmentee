@@ -1,15 +1,20 @@
 package ch.epfl.cs211.imageprocessing;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.core.PVector;
 import processing.video.Capture;
 
 public class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
-	private final Capture cam;
+	
+	private Capture cam;
 
 	public void setup() {
-		size(1280, 360);
+		size(1920, 360);
+		
 		String[] cameras = Capture.list();
 		println(cameras.length);
 		if (cameras.length == 0) {
@@ -30,10 +35,15 @@ public class ImageProcessing extends PApplet {
 			cam.read();
 		}
 		PImage img = cam.get();
-		// PImage img = loadImage("board1.jpg");
-		PImage sobel = sobel(treshold(img));
+		// PImage img = loadImage("src.Processing.ImageProcessing.board1.jpg");
+		
+		Tresholding t = new Tresholding(img);
+		Sobel s = new Sobel(t.img());
+		Hough h = new Hough(s.img());
+		Edges e = new Edges(h.getBestCandidates());
+		
 		image(img, 0, 0);
-		image(sobel, 640, 0);
-		getIntersections(hough(sobel));
-	}
+		image(s.img(), 1280, 0);
+		//getIntersections(h.getBestCandidates());
+	}	
 }

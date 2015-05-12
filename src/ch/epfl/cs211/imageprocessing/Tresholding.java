@@ -11,13 +11,14 @@ public class Tresholding extends PApplet {
 	private static float MAX_BRIGHTNESS_TRESHOLD = 230;
 	private static float MIN_SATURATION_TRESHOLD = 25;
 	private static float MAX_SATURATION_TRESHOLD = 230;
+	PImage image;
 
-	public PImage treshold(PImage img) {
+	public Tresholding(PImage img) {
 		int x, y, pixel;
 		int imgW = img.width;
 		int imgH = img.height;
 
-		PImage result = new PImage(imgW, imgH);
+		image = new PImage(imgW, imgH);
 
 		float pixHue, pixBri, pixSat;
 
@@ -34,13 +35,15 @@ public class Tresholding extends PApplet {
 						&& pixBri < MAX_BRIGHTNESS_TRESHOLD
 						&& MIN_SATURATION_TRESHOLD < pixSat
 						&& pixSat < MAX_SATURATION_TRESHOLD) {
-					result.pixels[y * imgW + x] = color(255);
+					image.pixels[y * imgW + x] = color(255);
 				} else {
-					result.pixels[y * imgW + x] = color(0);
+					image.pixels[y * imgW + x] = color(0);
 				}
 			}
 		}
-
-		return result;
+	}
+	
+	public PImage img(){
+		return image;
 	}
 }
