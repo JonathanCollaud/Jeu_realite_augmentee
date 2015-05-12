@@ -9,7 +9,7 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
   int[] accumulator;
   
   public void setup() {
-    size(640, 360);
+    size(1280, 360);
     String[] cameras = Capture.list();
     println(cameras.length);
     if (cameras.length == 0) {
@@ -31,8 +31,10 @@ public class HoughTransform extends PApplet implements Comparator<Integer> {
     }
     PImage img = cam.get();
     //PImage img = loadImage("board1.jpg");
+    PImage sobel = sobel(img);
     image(img, 0, 0);
-    getIntersections(hough(sobel(img)));
+    image(sobel, 640, 0);
+    getIntersections(hough(sobel));
   }
   
   public ArrayList<PVector> getIntersections(ArrayList<PVector> lines){
