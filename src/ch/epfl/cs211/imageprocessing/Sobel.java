@@ -6,7 +6,7 @@ import processing.core.PImage;
 public class Sobel extends PApplet {
 	private static final long serialVersionUID = 1L;
 
-	public PImage sobel(PImage img, int[] acc) {
+	public PImage sobel(PImage img) {
 		int x, y, i, j;
 		int imgW = img.width;
 		int imgH = img.height;
@@ -28,7 +28,7 @@ public class Sobel extends PApplet {
 				sum_v = 0;
 				for (i = -kernelHalfSize; i <= kernelHalfSize; i++) {
 					for (j = -kernelHalfSize; j <= kernelHalfSize; j++) {
-						pixelBrightness = brightness(acc[(y + j) * imgW + x + i]);
+						pixelBrightness = brightness(img.pixels[(y + j) * imgW + x + i]);
 						sum_h += pixelBrightness
 								* hKernel[i + kernelHalfSize][j
 										+ kernelHalfSize];

@@ -1,24 +1,16 @@
-import processing.core.*;
-import processing.data.*;
-import processing.event.*;
-import processing.opengl.*;
+package ch.epfl.cs211.imageprocessing;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-import processing.video.Capture;
-import java.util.Comparator;
-import java.util.Collections;
+import processing.core.PVector;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-
-public class HoughTransform extends PApplet implements Comparator<Integer> {
+public class Hough extends PApplet implements Comparator<Integer> {
+	private static final long serialVersionUID = 1L;
+	
 	int[] accumulator;
 
 	public ArrayList<PVector> getIntersections(ArrayList<PVector> lines) {
