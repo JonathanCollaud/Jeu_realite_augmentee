@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="core/library/gluegen.jar"/>
 	<classpathentry kind="lib" path="core/library/jogl.awt.jar"/>
 	<classpathentry kind="lib" path="core/library/nativewindow.all.jar"/>
+	<classpathentry kind="lib" path="D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/core/library/papaya/library/papaya.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
