@@ -9,19 +9,19 @@ import processing.core.PImage;
 public final class Sobel extends Filter {
 	private float[][] H_KERNEL = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
 	private float[][] V_KERNEL = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
-
+	private float weight = 1.f;
+	
 	public Sobel(PApplet p) {
 		super(p);
 	}
 
 	@Override
-	public PImage filter(PImage img) {
+	public PImage filter(final PImage img) {
 		PImage image;
 		
 		int x, y, i, j;
 		int imgW = img.width;
 		int imgH = img.height;
-		float weight = 1.f;
 		float[] buffer = new float[img.width * img.height];
 
 		// *************************************

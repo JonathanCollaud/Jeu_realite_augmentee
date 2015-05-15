@@ -12,5 +12,5 @@ public abstract class Filter {
 	}
 	
 	// Retourne l’image modifiée
-	abstract public PImage filter(PImage img);
+	abstract public PImage filter(final PImage img);
 }
