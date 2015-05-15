@@ -7,8 +7,7 @@ import java.util.Comparator;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public final class Hough extends PApplet implements Comparator<Integer>, Filter {
-	private static final long serialVersionUID = 1L;
+public final class Hough extends Filter implements Comparator<Integer> {
 	private static final float DISC_STEPS_R = 2.5f;
 	private static final float DISC_STEPS_PHI = 0.06f;
 	private static final float[] TAB_SIN = new float[(int) (Math.PI / DISC_STEPS_PHI)];
@@ -16,42 +15,14 @@ public final class Hough extends PApplet implements Comparator<Integer>, Filter 
 	private static final int NEIGHBOURHOOD = 10; // size of the region we search for a local maximum
 	private static final int MIN_VOTES = 200; // only search around lines with more that this amount
 							// of votes (to be adapted to your image)
-	private final int[] accumulator;
+	private int[] accumulator;
 	private final ArrayList<Integer> bestCandidates = new ArrayList<Integer>();
 	private int phiDim, rDim;
 
-	public Hough(PImage img) {
-
-		phiDim = (int) (Math.PI / DISC_STEPS_PHI);
-		rDim = (int) (((img.width + img.height) * 2 + 1) / DISC_STEPS_R);
-		initTrigo(phiDim);
-
-		// our accumulator (with a 1 pix margin around)
-		accumulator = new int[(phiDim + 2) * (rDim + 2)];
-
-		// Fill the accumulator: on edge points (ie, white pixels of the edge
-		// image), store all possible (r, phi) pairs describing lines going
-		// through the point.
-		int x, y, accR, accPhi;
-		for (y = 0; y < img.height; y++) {
-			for (x = 0; x < img.width; x++) {
-				// Are we on an edge?
-				if (brightness(img.pixels[y * img.width + x]) != 0) {
-
-					// ...determine here all the lines (r, phi) passing through
-					// pixel (x,y), convert (r,phi) to coordinates in the
-					// accumulator, and increment accordingly the accumulator.
-					for (accPhi = 0; accPhi < phiDim; accPhi++) {
-						accR = (int) Math.round(x * TAB_COS[accPhi] + y
-								* TAB_SIN[accPhi] + (rDim + 1) / 2);
-						accumulator[(accPhi + 1) * (rDim + 2) + accR]++;
-					}
-
-				}
-			}
-		}
+	public Hough(PApplet p) {
+		super(p);
 	}
-
+	
 	public ArrayList<Integer> getBestCandidates() {
 		int i, dR, dPhi, neighbourIndex;
 		boolean bestCandidate;
@@ -101,17 +72,6 @@ public final class Hough extends PApplet implements Comparator<Integer>, Filter 
 	}
 
 	@Override
-	public PImage img() {
-		PImage image = new PImage(rDim, phiDim);
-
-		for (int p = 0; p < accumulator.length; p++) {
-			image.pixels[p] = accumulator[p];
-		}
-
-		return image;
-	}
-
-	@Override
 	public int compare(Integer l1, Integer l2) {
 		if (accumulator[l1] > accumulator[l2]
 				|| (accumulator[l1] == accumulator[l2] && l1 < l2))
@@ -130,5 +90,45 @@ public final class Hough extends PApplet implements Comparator<Integer>, Filter 
 			TAB_SIN[accPhi] = (float) (Math.sin(ang) * inverseR);
 			TAB_COS[accPhi] = (float) (Math.cos(ang) * inverseR);
 		}
+	}
+
+	@Override
+	public PImage filter(PImage img) {
+		phiDim = (int) (Math.PI / DISC_STEPS_PHI);
+		rDim = (int) (((img.width + img.height) * 2 + 1) / DISC_STEPS_R);
+		initTrigo(phiDim);
+
+		// our accumulator (with a 1 pix margin around)
+		accumulator = new int[(phiDim + 2) * (rDim + 2)];
+
+		// Fill the accumulator: on edge points (ie, white pixels of the edge
+		// image), store all possible (r, phi) pairs describing lines going
+		// through the point.
+		int x, y, accR, accPhi;
+		for (y = 0; y < img.height; y++) {
+			for (x = 0; x < img.width; x++) {
+				// Are we on an edge?
+				if (p.brightness(img.pixels[y * img.width + x]) != 0) {
+
+					// ...determine here all the lines (r, phi) passing through
+					// pixel (x,y), convert (r,phi) to coordinates in the
+					// accumulator, and increment accordingly the accumulator.
+					for (accPhi = 0; accPhi < phiDim; accPhi++) {
+						accR = (int) Math.round(x * TAB_COS[accPhi] + y
+								* TAB_SIN[accPhi] + (rDim + 1) / 2);
+						accumulator[(accPhi + 1) * (rDim + 2) + accR]++;
+					}
+
+				}
+			}
+		}
+		
+		PImage image = new PImage(rDim, phiDim);
+
+		for (int p = 0; p < accumulator.length; p++) {
+			image.pixels[p] = accumulator[p];
+		}
+
+		return image;
 	}
 }

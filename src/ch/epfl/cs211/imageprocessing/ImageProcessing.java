@@ -10,7 +10,15 @@ public final class ImageProcessing extends PApplet {
 	private Capture cam;
 
 	private boolean withCam = false;
+	private Threshold thresh_hbs = new Threshold(this, Threshold.Method.HBS);
+	private Threshold thresh_intensity = new Threshold(this, Threshold.Method.INTENSITY);
+	private Blur blur = new Blur(this);
+	private Sobel sobel = new Sobel(this);
+	private Hough hough = new Hough(this);
 
+	PImage original = null;
+	PImage img = null;
+	
 	public void setup() {
 		size(1920, 360);
 
@@ -29,29 +37,38 @@ public final class ImageProcessing extends PApplet {
 				cam.start();
 			}
 		}
+		
+
 	}
 
 	public void draw() {
-		PImage img;
+	
 
 		if (withCam) {
 			if (cam.available() == true) {
 				cam.read();
 			}
-			img = cam.get();
+			original = cam.get();
 		} else {
-			img = loadImage("D:/Workspace/Info_visuelle/Jeu_realite_augmentee/src/ch/epfl/cs211/ressources/board1.jpg");
+			original = loadImage("D:/Workspace/Info_visuelle/Jeu_realite_augmentee/src/ch/epfl/cs211/ressources/board1.jpg");
 		}
+		try {
+			img = (PImage)original.clone();
+		} catch (CloneNotSupportedException e1) {
+			e1.printStackTrace();
+		}
+		
+		// On applique les différents filtres à la suite
+		img = thresh_hbs.filter(img);
+		img = blur.filter(img);
+		img = thresh_intensity.filter(img);
+		img = sobel.filter(img);
+		img = hough.filter(img);
+		
+		Edges e = new Edges(hough.getBestCandidates(), this);
 
-		Filter t_hbs = new Thresholding(img, Thresholding.Method.HBS);
-		Filter b = new Blur(t_hbs.img());
-		Filter t_int = new Thresholding(b.img(), Thresholding.Method.INTENSITY);
-		Filter s = new Sobel(t_int.img());
-		Hough h = new Hough(s.img());
-		Edges e = new Edges(h.getBestCandidates());
-
-		image(img, 0, 0);
-		image(s.img(), 1280, 0);
+		image(original, 0, 0);
+		image(img, 1280, 0);
 		// getIntersections(h.getBestCandidates());
 	}
 }

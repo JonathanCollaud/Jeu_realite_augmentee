@@ -1,15 +1,23 @@
 package ch.epfl.cs211.imageprocessing;
 
+import static processing.core.PApplet.pow;
+import static processing.core.PApplet.sqrt;
+import static processing.core.PConstants.ALPHA;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public final class Sobel extends PApplet implements Filter {
-	private static final long serialVersionUID = 1L;
+public final class Sobel extends Filter {
 	private float[][] H_KERNEL = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
 	private float[][] V_KERNEL = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
-	PImage image;
 
-	public Sobel(PImage img) {
+	public Sobel(PApplet p) {
+		super(p);
+	}
+
+	@Override
+	public PImage filter(PImage img) {
+		PImage image;
+		
 		int x, y, i, j;
 		int imgW = img.width;
 		int imgH = img.height;
@@ -18,7 +26,7 @@ public final class Sobel extends PApplet implements Filter {
 
 		// *************************************
 		// Implement here the double convolution
-		image = createImage(imgW, imgH, ALPHA);
+		image = p.createImage(imgW, imgH, ALPHA);
 		int kernelHalfSize = H_KERNEL.length / 2;
 		float pixelBrightness;
 		float maxBrightness = 0;
@@ -30,7 +38,7 @@ public final class Sobel extends PApplet implements Filter {
 				sum_v = 0;
 				for (i = -kernelHalfSize; i <= kernelHalfSize; i++) {
 					for (j = -kernelHalfSize; j <= kernelHalfSize; j++) {
-						pixelBrightness = brightness(img.pixels[(y + j) * imgW + x + i]);
+						pixelBrightness = p.brightness(img.pixels[(y + j) * imgW + x + i]);
 						sum_h += pixelBrightness
 								* H_KERNEL[i + kernelHalfSize][j
 										+ kernelHalfSize];
@@ -49,16 +57,13 @@ public final class Sobel extends PApplet implements Filter {
 		for (y = 0; y < imgH; y++) {
 			for (x = 0; x < imgW; x++) {
 				if (buffer[y * imgW + x] > maxBrightness * 0.3f) {
-					image.pixels[y * imgW + x] = color(255);
+					image.pixels[y * imgW + x] = p.color(255);
 				} else {
-					image.pixels[y * imgW + x] = color(0);
+					image.pixels[y * imgW + x] = p.color(0);
 				}
 			}
 		}
-	}
-
-	@Override
-	public PImage img(){
+		
 		return image;
 	}
 }

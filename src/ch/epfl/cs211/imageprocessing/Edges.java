@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public final class Edges extends PApplet{
-	private static final long serialVersionUID = 1L;
+import static processing.core.PApplet.cos;
+import static processing.core.PApplet.sin;
+
+public final class Edges {
 	private static final int N_LINES = 4;
 	private final ArrayList<PVector> bestCandidates = new ArrayList<PVector>();
+	private final PApplet p;
 	
-	public Edges(ArrayList<Integer> accumulator) {
+	public Edges(ArrayList<Integer> accumulator, PApplet p) {
+		this.p = p;
+		
 		ArrayList<PVector> result = new ArrayList<PVector>();
 		int i, accR, accPhi, x0, y0, x1, y1, x2, y2, x3, y3;
 		float r, phi;
@@ -40,22 +45,22 @@ public final class Edges extends PApplet{
 			x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
 
 			// Finally, plot the lines
-			stroke(204, 102, 0);
+			p.stroke(204, 102, 0);
 			if (y0 > 0) {
 				if (x1 > 0)
-					line(x0, y0, x1, y1);
+					p.line(x0, y0, x1, y1);
 				else if (y2 > 0)
-					line(x0, y0, x2, y2);
+					p.line(x0, y0, x2, y2);
 				else
-					line(x0, y0, x3, y3);
+					p.line(x0, y0, x3, y3);
 			} else {
 				if (x1 > 0) {
 					if (y2 > 0)
-						line(x1, y1, x2, y2);
+						p.line(x1, y1, x2, y2);
 					else
-						line(x1, y1, x3, y3);
+						p.line(x1, y1, x3, y3);
 				} else
-					line(x2, y2, x3, y3);
+					p.line(x2, y2, x3, y3);
 			}
 		}
 	}
@@ -77,8 +82,8 @@ public final class Edges extends PApplet{
 						* cos(line2.y)) / d);
 
 				// draw the intersection
-				fill(255, 128, 0);
-				ellipse(x, y, 10, 10);
+				p.fill(255, 128, 0);
+				p.ellipse(x, y, 10, 10);
 			}
 		}
 		return intersections;
