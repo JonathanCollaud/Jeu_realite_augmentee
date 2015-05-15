@@ -7,7 +7,7 @@ import java.util.Comparator;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Hough extends PApplet implements Comparator<Integer> {
+public final class Hough extends PApplet implements Comparator<Integer>, Filter {
 	private static final long serialVersionUID = 1L;
 	private static final float DISC_STEPS_R = 2.5f;
 	private static final float DISC_STEPS_PHI = 0.06f;
@@ -100,6 +100,7 @@ public class Hough extends PApplet implements Comparator<Integer> {
 		return bestCandidates;
 	}
 
+	@Override
 	public PImage img() {
 		PImage image = new PImage(rDim, phiDim);
 

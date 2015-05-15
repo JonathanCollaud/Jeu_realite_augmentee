@@ -3,7 +3,7 @@ package ch.epfl.cs211.imageprocessing;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Sobel extends PApplet {
+public final class Sobel extends PApplet implements Filter {
 	private static final long serialVersionUID = 1L;
 	private float[][] H_KERNEL = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
 	private float[][] V_KERNEL = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
@@ -57,6 +57,7 @@ public class Sobel extends PApplet {
 		}
 	}
 
+	@Override
 	public PImage img(){
 		return image;
 	}

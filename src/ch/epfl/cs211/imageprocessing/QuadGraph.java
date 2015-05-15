@@ -5,7 +5,7 @@ import java.util.List;
 
 import processing.core.PVector;
 
-public class QuadGraph {
+public final class QuadGraph {
 
 	List<int[]> cycles = new ArrayList<int[]>();
 	int[][] graph;
@@ -62,7 +62,7 @@ public class QuadGraph {
 	List<int[]> findCycles() {
 
 		cycles.clear();
-		// Parcours chaque nœud succesivement
+		// Parcours chaque nï¿½ud succesivement
 		for (int i = 0; i < graph.length; i++) {
 			for (int j = 0; j < graph[i].length; j++) {
 				findNewCycles(new int[] { graph[i][j] });

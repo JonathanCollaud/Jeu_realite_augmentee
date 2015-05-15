@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class Edges extends PApplet{
+public final class Edges extends PApplet{
 	private static final long serialVersionUID = 1L;
 	private static final int N_LINES = 4;
 	private final ArrayList<PVector> bestCandidates = new ArrayList<PVector>();

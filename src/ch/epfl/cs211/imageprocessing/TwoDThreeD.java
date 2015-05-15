@@ -5,7 +5,7 @@ import java.util.List;
 import processing.core.PVector;
 import papaya.*;
 
-public class TwoDThreeD {
+public final class TwoDThreeD {
 	
 	// default focal length, well suited for most webcams
 	static float f = 700;
@@ -69,13 +69,13 @@ public class TwoDThreeD {
 		
 	private double[][] solveExtrinsicMatrix(List<PVector> points2D) {
 	
-		// p ~= K · [R|t] · P
+		// p ~= K ï¿½ [R|t] ï¿½ P
 		// with P the (3D) corners of the physical board, p the (2D) 
 		// projected points onto the webcam image, K the intrinsic 
 		// matrix and R and t the rotation and translation we want to 
 		// compute.
 		//
-		// => We want to solve: (K^(-1) · p) X ([R|t] · P) = 0
+		// => We want to solve: (K^(-1) ï¿½ p) X ([R|t] ï¿½ P) = 0
 		
 		float [][] invK=Mat.inverse(K);
 
@@ -83,12 +83,12 @@ public class TwoDThreeD {
 		
 		for(int i=0;i<4;i++){
 		    // TODO:
-		    // store in projectedCorners the result of (K^(-1) · p), for each 
+		    // store in projectedCorners the result of (K^(-1) ï¿½ p), for each 
 		    // corner p found in the webcam image.
 		    // You can use Mat.multiply to multiply a matrix with a vector.
 		}
 		
-		// 'A' contains the cross-product (K^(-1) · p) X P
+		// 'A' contains the cross-product (K^(-1) ï¿½ p) X P
 	    float[][] A= new float[12][9];
 	    
 	    for(int i=0;i<4;i++){

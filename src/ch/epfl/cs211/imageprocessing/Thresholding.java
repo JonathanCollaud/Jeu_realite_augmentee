@@ -3,7 +3,7 @@ package ch.epfl.cs211.imageprocessing;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Tresholding extends PApplet {
+public final class Thresholding extends PApplet implements Filter {
 	private static final long serialVersionUID = 1L;
 	private static float MIN_HUE_TRESHOLD = 100;
 	private static float MAX_HUE_TRESHOLD = 115;
@@ -12,8 +12,12 @@ public class Tresholding extends PApplet {
 	private static float MIN_SATURATION_TRESHOLD = 25;
 	private static float MAX_SATURATION_TRESHOLD = 230;
 	PImage image;
+	
+	public enum Method {
+		HBS, INTENSITY
+	}
 
-	public Tresholding(PImage img) {
+	public Thresholding(PImage img, Method method) {
 		int x, y, pixel;
 		int imgW = img.width;
 		int imgH = img.height;
@@ -26,6 +30,7 @@ public class Tresholding extends PApplet {
 			for (x = 0; x < imgW; x++) {
 
 				pixel = img.pixels[y * imgW + x];
+
 				pixHue = hue(pixel);
 				pixBri = brightness(pixel);
 				pixSat = saturation(pixel);
