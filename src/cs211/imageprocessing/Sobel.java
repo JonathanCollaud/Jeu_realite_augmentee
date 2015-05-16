@@ -1,4 +1,4 @@
-package ch.epfl.cs211.imageprocessing;
+package cs211.imageprocessing;
 
 import static processing.core.PApplet.pow;
 import static processing.core.PApplet.sqrt;
@@ -6,6 +6,13 @@ import static processing.core.PConstants.ALPHA;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * @author Jonathan Collaud
+ * @author Raphaël Dunant
+ * @author Thibault Viglino
+ *
+ * Groupe : AB
+ */
 public final class Sobel extends Filter {
 	private float[][] H_KERNEL = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
 	private float[][] V_KERNEL = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };

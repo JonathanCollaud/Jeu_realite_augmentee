@@ -1,9 +1,16 @@
-package ch.epfl.cs211.imageprocessing;
+package cs211.imageprocessing;
 
 import static processing.core.PConstants.ALPHA;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * @author Jonathan Collaud
+ * @author Raphaël Dunant
+ * @author Thibault Viglino
+ *
+ * Groupe : AB
+ */
 public final class Blur extends Filter {
 	private float[][] KERNEL = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
 	private final int weight = 100;

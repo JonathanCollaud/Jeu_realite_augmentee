@@ -1,8 +1,15 @@
-package ch.epfl.cs211.imageprocessing;
+package cs211.imageprocessing;
 
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * @author Jonathan Collaud
+ * @author Raphaël Dunant
+ * @author Thibault Viglino
+ *
+ * Groupe : AB
+ */
 public abstract class Filter {
 	
 	PApplet p;

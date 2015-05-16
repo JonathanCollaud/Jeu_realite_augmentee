@@ -1,9 +1,16 @@
-package ch.epfl.cs211.imageprocessing;
+package cs211.imageprocessing;
 
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
 
+/**
+ * @author Jonathan Collaud
+ * @author Raphaël Dunant
+ * @author Thibault Viglino
+ *
+ *         Groupe : AB
+ */
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
 
@@ -11,17 +18,15 @@ public final class ImageProcessing extends PApplet {
 
 	private boolean withCam = false;
 	private Threshold thresh_hbs = new Threshold(this, Threshold.Method.HBS);
-	private Threshold thresh_intensity = new Threshold(this,
-			Threshold.Method.INTENSITY);
+	private Threshold thresh_intensity = new Threshold(this, Threshold.Method.INTENSITY);
 	private Blur blur = new Blur(this);
 	private Sobel sobel = new Sobel(this);
 	private Hough hough = new Hough(this);
 
 	PImage original = null;
-	PImage img = null;
 
 	public void setup() {
-		size(1400, 600);
+		size(2000, 600);
 
 		if (withCam) {
 			String[] cameras = Capture.list();
@@ -49,23 +54,33 @@ public final class ImageProcessing extends PApplet {
 			}
 			original = cam.get();
 		} else {
-			original = loadImage("D:/Workspace/Info_visuelle/Jeu_realite_augmentee/src/ch/epfl/cs211/ressources/board1.jpg");
+			/**
+			 * Important ! L’emplacement ci-dessous peux varier suivant les
+			 * workspaces.
+			 */
+			original = loadImage("/Workspace/Info_visuelle/Jeu_realite_augmentee/src/cs211/ressources/board4.jpg");
 		}
-		try {
-			img = (PImage) original.clone();
-		} catch (CloneNotSupportedException e1) {
-			e1.printStackTrace();
-		}
+
+		PImage modifiedImg;
 
 		// On applique les différents filtres à la suite
-		img = thresh_hbs.filter(img);
-		img = blur.filter(img);
-		img = thresh_intensity.filter(img);
-		img = sobel.filter(img);
-		hough.displayLines(img);
+		modifiedImg = thresh_hbs.filter(original);
+		modifiedImg = blur.filter(modifiedImg);
+		modifiedImg = thresh_intensity.filter(modifiedImg);
+		modifiedImg = sobel.filter(modifiedImg);
+		PImage houghed = hough.computeLines(modifiedImg);
 
+		// Original avec lignes
 		image(original, 0, 0);
-		image(img, width / 2, 0);
+		hough.displayLinesAndGetCorners(modifiedImg);
+
+		// Hough
+		houghed.resize(original.width / 2, original.height);
+		image(houghed, original.width, 0);
+
+		// Sobel
+		image(modifiedImg, original.width + houghed.width, 0);
+
 		// getIntersections(h.getBestCandidates());
 	}
 }

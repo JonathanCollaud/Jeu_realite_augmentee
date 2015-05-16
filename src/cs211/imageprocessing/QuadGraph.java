@@ -1,10 +1,17 @@
-package ch.epfl.cs211.imageprocessing;
+package cs211.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PVector;
 
+/**
+ * @author Jonathan Collaud
+ * @author Raphaël Dunant
+ * @author Thibault Viglino
+ *
+ * Groupe : AB
+ */
 public final class QuadGraph {
 
 	List<int[]> cycles = new ArrayList<int[]>();
