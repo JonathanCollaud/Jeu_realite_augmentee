@@ -31,9 +31,9 @@ public final class Hough {
 	private static final int NEIGHBOURHOOD = 10; // size of the region we search
 													// for a local maximum
 	private static final int MIN_VOTES = 180; // only search around lines with
-													private static final float MIN_AREA = 100000;
-													private static final float MAX_AREA = 600000;
-												// more that this amount
+	private static final float MIN_AREA = 100000;
+	private static final float MAX_AREA = 600000;
+	// more that this amount
 	// of votes (to be adapted to your image)
 	private int[] accumulator;
 	private int phiDim, rDim;
@@ -86,68 +86,71 @@ public final class Hough {
 			PVector c41 = intersection(l4, l1);
 
 			// On colore, pour le folklore
-//			Random random = new Random();
-//			p.fill(p.color(min(255, random.nextInt(300)),
-//					min(255, random.nextInt(300)),
-//					min(255, random.nextInt(300)), 50));
-//			p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
+			// Random random = new Random();
+			// p.fill(p.color(min(255, random.nextInt(300)),
+			// min(255, random.nextInt(300)),
+			// min(255, random.nextInt(300)), 50));
+			// p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
 
 			// Tri
 			if (!QuadGraph.isConvex(c12, c23, c34, c41)
-					|| !QuadGraph.validArea(c12, c23, c34, c41, MAX_AREA, MIN_AREA)
+					|| !QuadGraph.validArea(c12, c23, c34, c41, MAX_AREA,
+							MIN_AREA)
 					|| !QuadGraph.nonFlatQuad(c12, c23, c34, c41)) {
-				it.remove();
+				// it.remove();
 			}
 		}
 
 		if (quads.getCycles().isEmpty()) {
 			System.err.println("Pas de quad suffisant.");
-		}
+		} else {
 
-		/**
-		 * Display
-		 */
-		
-		Integer[] quad = quads.getCycles().get(0);
-		List<PVector> finalLines = new ArrayList<>();
-		
-		for (int i = 0; i < 4; ++i) {
-			PVector line = lines.get(quad[i]);
-			// On recrée une collection avec juste les quatres meilleures lignes
-			finalLines.add(line);
-			
-			int x0 = 0;
-			int y0 = (int) (line.x / sin(line.y));
-			int x1 = (int) (line.x / cos(line.y));
-			int y1 = 0;
-			int x2 = img.width;
-			int y2 = (int) (-cos(line.y) / sin(line.y) * x2 + line.x
-					/ sin(line.y));
-			int y3 = img.width;
-			int x3 = (int) (-(y3 - line.x / sin(line.y)) * (sin(line.y) / cos(line.y)));
+			/**
+			 * Display
+			 */
 
-			// Finally, plot the lines
-			p.stroke(204, 102, 0);
-			if (y0 > 0) {
-				if (x1 > 0)
-					p.line(x0, y0, x1, y1);
-				else if (y2 > 0)
-					p.line(x0, y0, x2, y2);
-				else
-					p.line(x0, y0, x3, y3);
-			} else {
-				if (x1 > 0) {
-					if (y2 > 0)
-						p.line(x1, y1, x2, y2);
+			Integer[] quad = quads.getCycles().get(0);
+			List<PVector> finalLines = new ArrayList<>();
+
+			for (int i = 0; i < 4; ++i) {
+				PVector line = lines.get(quad[i]);
+				// On recrée une collection avec juste les quatres meilleures
+				// lignes
+				finalLines.add(line);
+
+				int x0 = 0;
+				int y0 = (int) (line.x / sin(line.y));
+				int x1 = (int) (line.x / cos(line.y));
+				int y1 = 0;
+				int x2 = img.width;
+				int y2 = (int) (-cos(line.y) / sin(line.y) * x2 + line.x
+						/ sin(line.y));
+				int y3 = img.width;
+				int x3 = (int) (-(y3 - line.x / sin(line.y)) * (sin(line.y) / cos(line.y)));
+
+				// Finally, plot the lines
+				p.stroke(204, 102, 0);
+				if (y0 > 0) {
+					if (x1 > 0)
+						p.line(x0, y0, x1, y1);
+					else if (y2 > 0)
+						p.line(x0, y0, x2, y2);
 					else
-						p.line(x1, y1, x3, y3);
-				} else
-					p.line(x2, y2, x3, y3);
+						p.line(x0, y0, x3, y3);
+				} else {
+					if (x1 > 0) {
+						if (y2 > 0)
+							p.line(x1, y1, x2, y2);
+						else
+							p.line(x1, y1, x3, y3);
+					} else
+						p.line(x2, y2, x3, y3);
+				}
 			}
-		}
 
-		// Prints intersections
-		getIntersections(finalLines);
+			// Prints intersections
+			getIntersections(finalLines);
+		}
 	}
 
 	public PImage computeLines(PImage img) {

@@ -22,7 +22,7 @@ public final class ImageProcessing extends PApplet {
 	 * Kind regards,
 	 * The devolppers
 	 */
-	private static final String LOAD_IMAGE_ADDRESS = "/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/board3.jpg";
+	private static final String LOAD_IMAGE_ADDRESS = "/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/data/board1.jpg";
 	private static final boolean WITH_WEBCAM = false;
 	
 	private Capture cam;
