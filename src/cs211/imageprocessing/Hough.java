@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -31,7 +30,9 @@ public final class Hough {
 	private static final float[] TAB_COS = new float[(int) (Math.PI / DISC_STEPS_PHI)];
 	private static final int NEIGHBOURHOOD = 10; // size of the region we search
 													// for a local maximum
-	private static final int MIN_VOTES = 200; // only search around lines with
+	private static final int MIN_VOTES = 180; // only search around lines with
+													private static final float MIN_AREA = 100000;
+													private static final float MAX_AREA = 600000;
 												// more that this amount
 	// of votes (to be adapted to your image)
 	private int[] accumulator;
@@ -42,7 +43,7 @@ public final class Hough {
 		this.p = p;
 	}
 
-	public List<PVector> displayLinesAndGetCorners(PImage img) {
+	public void displayLinesAndGetCorners(PImage img) {
 		// Si l’accumulator n’as pas été crée avec une autre image
 		if (accumulator == null) {
 			computeLines(img);
@@ -61,7 +62,7 @@ public final class Hough {
 			// Create PVectors and ad it to lines
 			lines.add(new PVector(r, phi));
 		}
-		
+
 		/**
 		 * Quad selection
 		 */
@@ -73,7 +74,7 @@ public final class Hough {
 		Iterator<Integer[]> it = quads.getCycles().iterator();
 		while (it.hasNext()) {
 			Integer[] quad = it.next();
-			
+
 			PVector l1 = lines.get(quad[0]);
 			PVector l2 = lines.get(quad[1]);
 			PVector l3 = lines.get(quad[2]);
@@ -83,32 +84,45 @@ public final class Hough {
 			PVector c23 = intersection(l2, l3);
 			PVector c34 = intersection(l3, l4);
 			PVector c41 = intersection(l4, l1);
-			
+
 			// On colore, pour le folklore
-			Random random = new Random();
-			p.fill(p.color(min(255, random.nextInt(300)), min(255, random.nextInt(300)), min(255, random.nextInt(300)), 50));
-			p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
-			
+//			Random random = new Random();
+//			p.fill(p.color(min(255, random.nextInt(300)),
+//					min(255, random.nextInt(300)),
+//					min(255, random.nextInt(300)), 50));
+//			p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
+
 			// Tri
-			if (!QuadGraph.isConvex(c12, c23, c34, c41) || 
-				!QuadGraph.validArea(c12, c23, c34, c41, 100, 10) || 
-				!QuadGraph.nonFlatQuad(c12, c23, c34, c41)){
+			if (!QuadGraph.isConvex(c12, c23, c34, c41)
+					|| !QuadGraph.validArea(c12, c23, c34, c41, MAX_AREA, MIN_AREA)
+					|| !QuadGraph.nonFlatQuad(c12, c23, c34, c41)) {
 				it.remove();
 			}
+		}
+
+		if (quads.getCycles().isEmpty()) {
+			System.err.println("Pas de quad suffisant.");
 		}
 
 		/**
 		 * Display
 		 */
-
-		for (PVector line : lines) {
-			// line.x = r, line.y = phi
+		
+		Integer[] quad = quads.getCycles().get(0);
+		List<PVector> finalLines = new ArrayList<>();
+		
+		for (int i = 0; i < 4; ++i) {
+			PVector line = lines.get(quad[i]);
+			// On recr�e une collection avec juste les quatres meilleures lignes
+			finalLines.add(line);
+			
 			int x0 = 0;
 			int y0 = (int) (line.x / sin(line.y));
 			int x1 = (int) (line.x / cos(line.y));
 			int y1 = 0;
 			int x2 = img.width;
-			int y2 = (int) (-cos(line.y) / sin(line.y) * x2 + line.x / sin(line.y));
+			int y2 = (int) (-cos(line.y) / sin(line.y) * x2 + line.x
+					/ sin(line.y));
 			int y3 = img.width;
 			int x3 = (int) (-(y3 - line.x / sin(line.y)) * (sin(line.y) / cos(line.y)));
 
@@ -132,7 +146,8 @@ public final class Hough {
 			}
 		}
 
-		return getIntersections(lines);
+		// Prints intersections
+		getIntersections(finalLines);
 	}
 
 	public PImage computeLines(PImage img) {
@@ -157,7 +172,8 @@ public final class Hough {
 					// accumulator, and increment accordingly the accumulator.
 					for (int accPhi = 0; accPhi < phiDim; accPhi++) {
 						float accR = x * TAB_COS[accPhi] + y * TAB_SIN[accPhi];
-						accumulator[(int) (accR + (rDim) / 2) + (accPhi + 1) * (rDim + 2)]++;
+						accumulator[(int) (accR + (rDim) / 2) + (accPhi + 1)
+								* (rDim + 2)]++;
 					}
 				}
 			}
@@ -198,7 +214,8 @@ public final class Hough {
 							if (accR + dR < 0 || accR + dR >= rDim)
 								continue;
 
-							int neighbourIndex = (accPhi + dPhi + 1) * (rDim + 2) + accR + dR + 1;
+							int neighbourIndex = (accPhi + dPhi + 1)
+									* (rDim + 2) + accR + dR + 1;
 
 							if (accumulator[i] < accumulator[neighbourIndex]) {
 								// the current idx is not a local maximum!
@@ -220,7 +237,8 @@ public final class Hough {
 		Comparator<Integer> c = new Comparator<Integer>() {
 			@Override
 			public int compare(Integer l1, Integer l2) {
-				if (accumulator[l1] > accumulator[l2] || (accumulator[l1] == accumulator[l2] && l1 < l2))
+				if (accumulator[l1] > accumulator[l2]
+						|| (accumulator[l1] == accumulator[l2] && l1 < l2))
 					return -1;
 				return 1;
 			}

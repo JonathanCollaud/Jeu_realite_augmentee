@@ -6,7 +6,7 @@ import processing.video.Capture;
 
 /**
  * @author Jonathan Collaud
- * @author Raphaël Dunant
+ * @author Raphael Dunant
  * @author Thibault Viglino
  *
  *         Groupe : AB
@@ -14,9 +14,19 @@ import processing.video.Capture;
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
 
+	/**
+	 * Dear person reading this code,
+	 * you might want to change the path below to be able to load your picture
+	 * since the relative path starts at the root of your workspace.
+	 * 
+	 * Kind regards,
+	 * The devolppers
+	 */
+	private static final String LOAD_IMAGE_ADDRESS = "/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/board3.jpg";
+	private static final boolean WITH_WEBCAM = false;
+	
 	private Capture cam;
 
-	private boolean withCam = false;
 	private Threshold thresh_hbs = new Threshold(this, Threshold.Method.HBS);
 	private Threshold thresh_intensity = new Threshold(this, Threshold.Method.INTENSITY);
 	private Blur blur = new Blur(this);
@@ -28,7 +38,7 @@ public final class ImageProcessing extends PApplet {
 	public void setup() {
 		size(2000, 600);
 
-		if (withCam) {
+		if (WITH_WEBCAM) {
 			String[] cameras = Capture.list();
 			println(cameras.length);
 			if (cameras.length == 0) {
@@ -48,7 +58,7 @@ public final class ImageProcessing extends PApplet {
 
 	public void draw() {
 
-		if (withCam) {
+		if (WITH_WEBCAM) {
 			if (cam.available() == true) {
 				cam.read();
 			}
@@ -58,7 +68,7 @@ public final class ImageProcessing extends PApplet {
 			 * Important ! L’emplacement ci-dessous peux varier suivant les
 			 * workspaces.
 			 */
-			original = loadImage("/Workspace/Info_visuelle/Jeu_realite_augmentee/src/cs211/ressources/board3.jpg");
+			original = loadImage(LOAD_IMAGE_ADDRESS);
 		}
 
 		PImage modifiedImg;
