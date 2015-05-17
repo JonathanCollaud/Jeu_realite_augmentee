@@ -1,6 +1,7 @@
 package cs211.imageprocessing;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import processing.core.PVector;
@@ -10,19 +11,23 @@ import processing.core.PVector;
  * @author Raphaël Dunant
  * @author Thibault Viglino
  *
- * Groupe : AB
+ *         Groupe : AB
  */
 public final class QuadGraph {
 
-	List<int[]> cycles = new ArrayList<int[]>();
-	int[][] graph;
+	private List<Integer[]> cycles = new ArrayList<Integer[]>();
+	private Integer[][] graph;
+
+	public List<Integer[]> getCycles() {
+		return cycles;
+	}
 
 	public void build(List<PVector> lines, int width, int height) {
 
 		int n = lines.size();
 
 		// The maximum possible number of edges is sum(0..n) = n * (n + 1)/2
-		graph = new int[n * (n + 1) / 2][2];
+		graph = new Integer[n * (n + 1) / 2][2];
 
 		int idx = 0;
 
@@ -44,8 +49,7 @@ public final class QuadGraph {
 	 * Returns true if polar lines 1 and 2 intersect inside an area of size
 	 * (width, height)
 	 */
-	public static boolean intersect(PVector line1, PVector line2, int width,
-			int height) {
+	public static boolean intersect(PVector line1, PVector line2, int width, int height) {
 
 		double sin_t1 = Math.sin(line1.y);
 		double sin_t2 = Math.sin(line2.y);
@@ -66,34 +70,43 @@ public final class QuadGraph {
 
 	}
 
-	List<int[]> findCycles() {
+	public List<Integer[]> findCycles() {
 
 		cycles.clear();
 		// Parcours chaque n�ud succesivement
 		for (int i = 0; i < graph.length; i++) {
 			for (int j = 0; j < graph[i].length; j++) {
-				findNewCycles(new int[] { graph[i][j] });
+				findNewCycles(new Integer[] { graph[i][j] });
 			}
 		}
-		for (int[] cy : cycles) {
+
+		Iterator<Integer[]> it = cycles.iterator();
+		while (it.hasNext()) {
+			Integer[] cy = it.next();
+			
 			if (cy.length != 4)
-				cycles.remove(cy);
+				it.remove();
 			/*
 			 * Prints cycles String s = "" + cy[0]; for (int i = 1; i <
 			 * cy.length; i++) { s += "," + cy[i]; } System.out.println(s);
 			 */
 		}
+
 		return cycles;
 	}
 
-	void findNewCycles(int[] path) {
+	private void findNewCycles(Integer[] path) {
+		if (path[0] == null)
+			return;
+
 		int n = path[0];
 		int x;
-		int[] sub = new int[path.length + 1];
+		Integer[] sub = new Integer[path.length + 1];
 
-		for (int i = 0; i < graph.length; i++)
-			for (int y = 0; y <= 1; y++)
-				if (graph[i][y] == n)
+		for (int i = 0; i < graph.length; i++) {
+			for (int y = 0; y <= 1; y++) {
+
+				if (graph[i][y] != null && graph[i][y] == n)
 				// edge refers to our current node
 				{
 					x = graph[i][(y + 1) % 2];
@@ -104,21 +117,22 @@ public final class QuadGraph {
 						System.arraycopy(path, 0, sub, 1, path.length);
 						// explore extended path
 						findNewCycles(sub);
-					} else if ((path.length > 2)
-							&& (x == path[path.length - 1]))
+					} else if ((path.length > 2) && (x == path[path.length - 1]))
 					// cycle found
 					{
-						int[] p = normalize(path);
-						int[] inv = invert(p);
+						Integer[] p = normalize(path);
+						Integer[] inv = invert(p);
 						if (isNew(p) && isNew(inv)) {
 							cycles.add(p);
 						}
 					}
 				}
+			}
+		}
 	}
 
 	// check of both arrays have same lengths and contents
-	static Boolean equals(int[] a, int[] b) {
+	private static Boolean equals(Integer[] a, Integer[] b) {
 		Boolean ret = (a[0] == b[0]) && (a.length == b.length);
 
 		for (int i = 1; ret && (i < a.length); i++) {
@@ -131,8 +145,8 @@ public final class QuadGraph {
 	}
 
 	// create a path array with reversed order
-	static int[] invert(int[] path) {
-		int[] p = new int[path.length];
+	private static Integer[] invert(Integer[] path) {
+		Integer[] p = new Integer[path.length];
 
 		for (int i = 0; i < path.length; i++) {
 			p[i] = path[path.length - 1 - i];
@@ -142,8 +156,8 @@ public final class QuadGraph {
 	}
 
 	// rotate cycle path such that it begins with the smallest node
-	static int[] normalize(int[] path) {
-		int[] p = new int[path.length];
+	static Integer[] normalize(Integer[] path) {
+		Integer[] p = new Integer[path.length];
 		int x = smallest(path);
 		int n;
 
@@ -160,10 +174,10 @@ public final class QuadGraph {
 
 	// compare path against known cycles
 	// return true, iff path is not a known cycle
-	Boolean isNew(int[] path) {
+	private Boolean isNew(Integer[] path) {
 		Boolean ret = true;
 
-		for (int[] p : cycles) {
+		for (Integer[] p : cycles) {
 			if (equals(p, path)) {
 				ret = false;
 				break;
@@ -174,7 +188,7 @@ public final class QuadGraph {
 	}
 
 	// return the int of the array which is the smallest
-	static int smallest(int[] path) {
+	private static Integer smallest(Integer[] path) {
 		int min = path[0];
 
 		for (int p : path) {
@@ -187,7 +201,7 @@ public final class QuadGraph {
 	}
 
 	// check if vertex n is contained in path
-	static Boolean visited(int n, int[] path) {
+	private static Boolean visited(Integer n, Integer[] path) {
 		Boolean ret = false;
 
 		for (int p : path) {
@@ -212,8 +226,7 @@ public final class QuadGraph {
 	 * 
 	 * @param c1
 	 */
-	public static boolean isConvex(PVector c1, PVector c2, PVector c3,
-			PVector c4) {
+	public static boolean isConvex(PVector c1, PVector c2, PVector c3, PVector c4) {
 
 		PVector v21 = PVector.sub(c1, c2);
 		PVector v32 = PVector.sub(c2, c3);
@@ -225,8 +238,7 @@ public final class QuadGraph {
 		float i3 = v43.cross(v14).z;
 		float i4 = v14.cross(v21).z;
 
-		if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0)
-				|| (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
+		if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0) || (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
 			return true;
 		else
 			System.out.println("Eliminating non-convex quad");
@@ -237,8 +249,7 @@ public final class QuadGraph {
 	/**
 	 * Compute the area of a quad, and check it lays within a specific range
 	 */
-	public static boolean validArea(PVector c1, PVector c2, PVector c3,
-			PVector c4, float max_area, float min_area) {
+	public static boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
 
 		PVector v21 = PVector.sub(c1, c2);
 		PVector v32 = PVector.sub(c2, c3);
@@ -267,8 +278,7 @@ public final class QuadGraph {
 	 * all large enough (the quad representing our board should be close to a
 	 * rectangle)
 	 */
-	public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3,
-			PVector c4) {
+	public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3, PVector c4) {
 
 		// cos(70deg) ~= 0.3
 		float min_cos = 0.3f;
@@ -283,8 +293,7 @@ public final class QuadGraph {
 		float cos3 = Math.abs(v43.dot(v14) / (v43.mag() * v14.mag()));
 		float cos4 = Math.abs(v14.dot(v21) / (v14.mag() * v21.mag()));
 
-		if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos
-				&& cos4 < min_cos)
+		if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
 			return true;
 		else {
 			System.out.println("Flat quad");

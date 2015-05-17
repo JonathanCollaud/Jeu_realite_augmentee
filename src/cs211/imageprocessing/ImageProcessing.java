@@ -58,7 +58,7 @@ public final class ImageProcessing extends PApplet {
 			 * Important ! L’emplacement ci-dessous peux varier suivant les
 			 * workspaces.
 			 */
-			original = loadImage("/Workspace/Info_visuelle/Jeu_realite_augmentee/src/cs211/ressources/board4.jpg");
+			original = loadImage("/Workspace/Info_visuelle/Jeu_realite_augmentee/src/cs211/ressources/board3.jpg");
 		}
 
 		PImage modifiedImg;

@@ -8,7 +8,9 @@ import static processing.core.PConstants.ALPHA;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -19,7 +21,7 @@ import processing.core.PVector;
  * @author Raphaël Dunant
  * @author Thibault Viglino
  *
- * Groupe : AB
+ *         Groupe : AB
  */
 public final class Hough {
 	private static final int N_LINES = 6;
@@ -58,21 +60,57 @@ public final class Hough {
 
 			// Create PVectors and ad it to lines
 			lines.add(new PVector(r, phi));
+		}
+		
+		/**
+		 * Quad selection
+		 */
 
-			// Cartesian equation of a line: y = ax + b
-			// in polar, y = (-cos(phi)/sin(phi))x + (r/sin(phi))
-			// => y = 0 : x = r / cos(phi)
-			// => x = 0 : y = r / sin(phi)
-			// compute the intersection of this line with the 4 borders of the
-			// image
+		QuadGraph quads = new QuadGraph();
+		quads.build(lines, img.width, img.height);
+		quads.findCycles();
+
+		Iterator<Integer[]> it = quads.getCycles().iterator();
+		while (it.hasNext()) {
+			Integer[] quad = it.next();
+			
+			PVector l1 = lines.get(quad[0]);
+			PVector l2 = lines.get(quad[1]);
+			PVector l3 = lines.get(quad[2]);
+			PVector l4 = lines.get(quad[3]);
+
+			PVector c12 = intersection(l1, l2);
+			PVector c23 = intersection(l2, l3);
+			PVector c34 = intersection(l3, l4);
+			PVector c41 = intersection(l4, l1);
+			
+			// On colore, pour le folklore
+			Random random = new Random();
+			p.fill(p.color(min(255, random.nextInt(300)), min(255, random.nextInt(300)), min(255, random.nextInt(300)), 50));
+			p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
+			
+			// Tri
+			if (!QuadGraph.isConvex(c12, c23, c34, c41) || 
+				!QuadGraph.validArea(c12, c23, c34, c41, 100, 10) || 
+				!QuadGraph.nonFlatQuad(c12, c23, c34, c41)){
+				it.remove();
+			}
+		}
+
+		/**
+		 * Display
+		 */
+
+		for (PVector line : lines) {
+			// line.x = r, line.y = phi
 			int x0 = 0;
-			int y0 = (int) (r / sin(phi));
-			int x1 = (int) (r / cos(phi));
+			int y0 = (int) (line.x / sin(line.y));
+			int x1 = (int) (line.x / cos(line.y));
 			int y1 = 0;
 			int x2 = img.width;
-			int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
+			int y2 = (int) (-cos(line.y) / sin(line.y) * x2 + line.x / sin(line.y));
 			int y3 = img.width;
-			int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
+			int x3 = (int) (-(y3 - line.x / sin(line.y)) * (sin(line.y) / cos(line.y)));
 
 			// Finally, plot the lines
 			p.stroke(204, 102, 0);
@@ -125,13 +163,11 @@ public final class Hough {
 			}
 		}
 
-		System.out.println("img " + img.width + " " + img.height);
-		System.out.println("hou " + rDim + " " + phiDim);
 		PImage houghImg = p.createImage(rDim + 2, phiDim + 2, ALPHA);
 		for (int i = 0; i < accumulator.length; i++) {
 			houghImg.pixels[i] = p.color(min(255, accumulator[i]));
 		}
-		
+
 		// houghImg.updatePixels();
 		return houghImg;
 	}
@@ -221,16 +257,23 @@ public final class Hough {
 			for (int j = i + 1; j < lines.size(); j++) {
 				PVector line2 = lines.get(j);
 
-				// compute the intersection and add it to 'intersections'
-				float d = cos(line2.y) * sin(line1.y) - cos(line1.y) * sin(line2.y);
-				int x = (int) ((line2.x * sin(line1.y) - line1.x * sin(line2.y)) / d);
-				int y = (int) ((-line2.x * cos(line1.y) + line1.x * cos(line2.y)) / d);
+				PVector intersection = intersection(line1, line2);
+				intersections.add(intersection);
 
 				// draw the intersection
 				p.fill(255, 128, 0);
-				p.ellipse(x, y, 10, 10);
+				p.ellipse(intersection.x, intersection.y, 10, 10);
 			}
 		}
 		return intersections;
+	}
+
+	private PVector intersection(PVector line1, PVector line2) {
+		// compute the intersection and add it to 'intersections'
+		float d = cos(line2.y) * sin(line1.y) - cos(line1.y) * sin(line2.y);
+		int x = (int) ((line2.x * sin(line1.y) - line1.x * sin(line2.y)) / d);
+		int y = (int) ((-line2.x * cos(line1.y) + line1.x * cos(line2.y)) / d);
+
+		return new PVector(x, y);
 	}
 }
