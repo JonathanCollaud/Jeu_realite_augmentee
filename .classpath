@@ -24,5 +24,8 @@
 	<classpathentry kind="lib" path="core/library/papaya/library/papaya.jar"/>
 	<classpathentry kind="lib" path="core/library/jna.jar"/>
 	<classpathentry kind="lib" path="core/library/video.jar"/>
+	<classpathentry kind="lib" path="core/library/gstreamer-java.jar"/>
+	<classpathentry kind="lib" path="core/library/GSVideo.jar"/>
+	<classpathentry kind="lib" path="core/library/macosx64/libgstreamer-0.10.dylib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

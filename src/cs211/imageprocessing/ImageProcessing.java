@@ -13,17 +13,8 @@ import processing.video.Capture;
  */
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
-
-	/**
-	 * Dear person reading this code,
-	 * you might want to change the path below to be able to load your picture
-	 * since the relative path starts at the root of your workspace.
-	 * 
-	 * Kind regards,
-	 * The devolppers
-	 */
 	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
-	private static final boolean WITH_WEBCAM = false;
+	private static final boolean WITH_WEBCAM = true;
 	
 	private Capture cam;
 
@@ -40,7 +31,6 @@ public final class ImageProcessing extends PApplet {
 
 		if (WITH_WEBCAM) {
 			String[] cameras = Capture.list();
-			println(cameras.length);
 			if (cameras.length == 0) {
 				println("There are no cameras available for capture.");
 				exit();
@@ -48,8 +38,10 @@ public final class ImageProcessing extends PApplet {
 				println("Available cameras:");
 				for (int i = 0; i < cameras.length; i++) {
 					println(cameras[i]);
+					println("dhsajl");
 				}
 				cam = new Capture(this, cameras[3]);
+				System.out.println(cam.width +" ; "+ cam.height);
 				cam.start();
 			}
 		}
@@ -63,11 +55,8 @@ public final class ImageProcessing extends PApplet {
 				cam.read();
 			}
 			original = cam.get();
+			original.resize(cam.width, cam.height);
 		} else {
-			/**
-			 * Important ! L’emplacement ci-dessous peux varier suivant les
-			 * workspaces.
-			 */
 			original = loadImage(LOAD_IMAGE_ADDRESS);
 		}
 
@@ -85,7 +74,8 @@ public final class ImageProcessing extends PApplet {
 		hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
-		houghed.resize(original.width / 2, original.height);
+		System.out.println(original.width +" ; "+ original.height);
+		houghed.resize(original.width, original.height);
 		image(houghed, original.width, 0);
 
 		// Sobel
