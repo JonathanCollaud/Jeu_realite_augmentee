@@ -72,7 +72,7 @@ public final class TwoDThreeD {
 		//
 		// => We want to solve: (K^(-1) � p) X ([R|t] � P) = 0
 		
-		float [][] invK=Mat.inverse(K);
+		//float [][] invK=Mat.inverse(K);
 		
 		float[][] projectedCorners = new float[4][3];
 		

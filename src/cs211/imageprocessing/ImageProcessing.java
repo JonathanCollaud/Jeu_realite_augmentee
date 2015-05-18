@@ -24,11 +24,9 @@ public final class ImageProcessing extends PApplet {
 	private Sobel sobel = new Sobel(this);
 	private Hough hough = new Hough(this);
 
-	PImage original = null;
+	private PImage original = null;
 
 	public void setup() {
-		size(2000, 600);
-
 		if (WITH_WEBCAM) {
 			String[] cameras = Capture.list();
 			if (cameras.length == 0) {
@@ -38,7 +36,6 @@ public final class ImageProcessing extends PApplet {
 				println("Available cameras:");
 				for (int i = 0; i < cameras.length; i++) {
 					println(cameras[i]);
-					println("dhsajl");
 				}
 				cam = new Capture(this, cameras[3]);
 				System.out.println(cam.width +" ; "+ cam.height);
@@ -59,7 +56,8 @@ public final class ImageProcessing extends PApplet {
 		} else {
 			original = loadImage(LOAD_IMAGE_ADDRESS);
 		}
-
+		size((int)(2.5 * original.width), original.height);
+		
 		PImage modifiedImg;
 
 		// On applique les différents filtres à la suite
@@ -74,8 +72,7 @@ public final class ImageProcessing extends PApplet {
 		hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
-		System.out.println(original.width +" ; "+ original.height);
-		houghed.resize(original.width, original.height);
+		houghed.resize(original.width/2, original.height);
 		image(houghed, original.width, 0);
 
 		// Sobel
