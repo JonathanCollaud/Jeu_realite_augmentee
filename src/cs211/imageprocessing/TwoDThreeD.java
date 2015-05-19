@@ -1,6 +1,7 @@
 package cs211.imageprocessing;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import papaya.Mat;
@@ -192,8 +193,20 @@ public final class TwoDThreeD {
 		// origin (0,0) of the image.
 		//
 		// You can use Collections.rotate to shift the corners inside the quad.
-		//Collections.rotate((List<PVector>)quad, Collections.min(quad, new CWComparator(center)));
-		
+
+		int i = 0;
+		while (i < quad.size() - 1
+				&& quad.get(i).dist(center) > quad.get(++i).dist(center))
+			;
+
+		Collections.rotate(quad, i);
+
+		for (Iterator<PVector> it = quad.iterator(); it.hasNext();) {
+			PVector vertex = (PVector) it.next();
+			System.out.println(quad.indexOf(vertex) + ": " + vertex.x + ", "
+					+ vertex.y);
+		}
+
 		return quad;
 	}
 }

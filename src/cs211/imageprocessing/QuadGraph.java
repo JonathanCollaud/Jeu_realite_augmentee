@@ -10,7 +10,7 @@ import processing.core.PVector;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
+ * 
  *         Groupe : AB
  */
 public final class QuadGraph {
@@ -22,7 +22,7 @@ public final class QuadGraph {
 		return cycles;
 	}
 
-	public void build(List<PVector> lines, int width, int height) {
+	public QuadGraph(List<PVector> lines, int width, int height) {
 
 		int n = lines.size();
 
@@ -31,8 +31,8 @@ public final class QuadGraph {
 
 		int idx = 0;
 
-		for (int i = 0; i < lines.size(); i++) {
-			for (int j = i + 1; j < lines.size(); j++) {
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
 				if (intersect(lines.get(i), lines.get(j), width, height)) {
 					// fill the graph using intersect() to check if two lines
 					// are connected in the graph.
@@ -49,7 +49,8 @@ public final class QuadGraph {
 	 * Returns true if polar lines 1 and 2 intersect inside an area of size
 	 * (width, height)
 	 */
-	public static boolean intersect(PVector line1, PVector line2, int width, int height) {
+	public static boolean intersect(PVector line1, PVector line2, int width,
+			int height) {
 
 		double sin_t1 = Math.sin(line1.y);
 		double sin_t2 = Math.sin(line2.y);
@@ -86,10 +87,6 @@ public final class QuadGraph {
 			
 			if (cy.length != 4)
 				it.remove();
-			/*
-			 * Prints cycles String s = "" + cy[0]; for (int i = 1; i <
-			 * cy.length; i++) { s += "," + cy[i]; } System.out.println(s);
-			 */
 		}
 
 		return cycles;
@@ -117,7 +114,8 @@ public final class QuadGraph {
 						System.arraycopy(path, 0, sub, 1, path.length);
 						// explore extended path
 						findNewCycles(sub);
-					} else if ((path.length > 2) && (x == path[path.length - 1]))
+					} else if ((path.length > 2)
+							&& (x == path[path.length - 1]))
 					// cycle found
 					{
 						Integer[] p = normalize(path);
@@ -226,7 +224,8 @@ public final class QuadGraph {
 	 * 
 	 * @param c1
 	 */
-	public static boolean isConvex(PVector c1, PVector c2, PVector c3, PVector c4) {
+	public static boolean isConvex(PVector c1, PVector c2, PVector c3,
+			PVector c4) {
 
 		PVector v21 = PVector.sub(c1, c2);
 		PVector v32 = PVector.sub(c2, c3);
@@ -238,7 +237,8 @@ public final class QuadGraph {
 		float i3 = v43.cross(v14).z;
 		float i4 = v14.cross(v21).z;
 
-		if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0) || (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
+		if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0)
+				|| (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
 			return true;
 		else
 			System.out.println("Eliminating non-convex quad");
@@ -249,7 +249,8 @@ public final class QuadGraph {
 	/**
 	 * Compute the area of a quad, and check it lays within a specific range
 	 */
-	public static boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
+	public static boolean validArea(PVector c1, PVector c2, PVector c3,
+			PVector c4, float max_area, float min_area) {
 
 		PVector v21 = PVector.sub(c1, c2);
 		PVector v32 = PVector.sub(c2, c3);
@@ -278,7 +279,8 @@ public final class QuadGraph {
 	 * all large enough (the quad representing our board should be close to a
 	 * rectangle)
 	 */
-	public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3, PVector c4) {
+	public static boolean nonFlatQuad(PVector c1, PVector c2, PVector c3,
+			PVector c4) {
 
 		// cos(70deg) ~= 0.3
 		float min_cos = 0.5f;
@@ -293,7 +295,8 @@ public final class QuadGraph {
 		float cos3 = Math.abs(v43.dot(v14) / (v43.mag() * v14.mag()));
 		float cos4 = Math.abs(v14.dot(v21) / (v14.mag() * v21.mag()));
 
-		if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
+		if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos
+				&& cos4 < min_cos)
 			return true;
 		else {
 			System.out.println("Flat quad");
@@ -301,4 +304,11 @@ public final class QuadGraph {
 		}
 	}
 
+	public void printCycles() {
+		String s = "" + cycles.get(0)[0];
+		for (int i = 1; i < cycles.get(0).length; i++) {
+			s += ", " + cycles.get(0)[i];
+		}
+		System.out.println(s);
+	}
 }

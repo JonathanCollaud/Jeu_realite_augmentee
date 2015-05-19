@@ -19,7 +19,7 @@ import processing.core.PVector;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
+ * 
  *         Groupe : AB
  */
 public final class Hough {
@@ -67,8 +67,7 @@ public final class Hough {
 		 * Quad selection
 		 */
 
-		QuadGraph quads = new QuadGraph();
-		quads.build(lines, img.width, img.height);
+		QuadGraph quads = new QuadGraph(lines, img.width, img.height);
 		quads.findCycles();
 
 		Iterator<Integer[]> it = quads.getCycles().iterator();
@@ -97,13 +96,13 @@ public final class Hough {
 					|| !QuadGraph.validArea(c12, c23, c34, c41, MAX_AREA,
 							MIN_AREA)
 					|| !QuadGraph.nonFlatQuad(c12, c23, c34, c41)) {
-				// it.remove();
+				it.remove();
 			}
 		}
 
 		if (quads.getCycles().isEmpty()) {
 			System.out.println("Pas de quad suffisant.");
-			return null;
+			return (new ArrayList<>());
 		} else {
 
 			/**
@@ -147,13 +146,66 @@ public final class Hough {
 					} else
 						p.line(x2, y2, x3, y3);
 				}
-				
+
 			}
 
 			// Prints and return intersections
-			getIntersections(finalLines);
-			return finalLines;
+			List<PVector> intersections = getIntersections(finalLines);
+
+			if (intersections.size() >= 4) {
+				return TwoDThreeD.sortCorners(getFourCorners(intersections));
+			} else {
+				return null;
+			}
 		}
+	}
+
+	private List<PVector> getFourCorners(List<PVector> intersections) {
+		if (intersections.size() < 4) {
+			return null;
+		}
+
+		PVector origin = new PVector(0, 0);
+
+		// 4 intersections which are the closest to the origin
+		PVector clo1 = new PVector(65536, 65536);
+		PVector clo2 = new PVector(65536, 65536);
+		PVector clo3 = new PVector(65536, 65536);
+		PVector clo4 = new PVector(65536, 65536);
+
+		for (Iterator<PVector> iterator = intersections.iterator(); iterator
+				.hasNext();) {
+			PVector corner = (PVector) iterator.next();
+			if (corner.dist(origin) < clo4.dist(origin)) {
+				if (corner.dist(origin) < clo3.dist(origin)) {
+					if (corner.dist(origin) < clo2.dist(origin)) {
+						if (corner.dist(origin) < clo1.dist(origin)) {
+							clo4 = clo3;
+							clo3 = clo2;
+							clo2 = clo1;
+							clo1 = corner;
+						} else {
+							clo4 = clo3;
+							clo3 = clo2;
+							clo2 = corner;
+						}
+					} else {
+						clo4 = clo3;
+						clo3 = corner;
+					}
+				} else {
+					clo4 = corner;
+				}
+			}
+		}
+
+		List<PVector> corners = new ArrayList<PVector>();
+		corners.add(clo4);
+		corners.add(clo3);
+		corners.add(clo2);
+		corners.add(clo1);
+
+		return corners;
 	}
 
 	public PImage computeLines(PImage img) {
@@ -190,7 +242,7 @@ public final class Hough {
 			houghImg.pixels[i] = p.color(min(255, accumulator[i]));
 		}
 
-		// houghImg.updatePixels();
+		houghImg.updatePixels();
 		return houghImg;
 	}
 
