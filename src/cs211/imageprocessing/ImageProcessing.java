@@ -38,6 +38,7 @@ public final class ImageProcessing extends PApplet {
 					println(cameras[i]);
 				}
 				cam = new Capture(this, cameras[3]);
+				System.out.println(cam.width +" ; "+ cam.height);
 				cam.start();
 			}
 		}
@@ -51,10 +52,11 @@ public final class ImageProcessing extends PApplet {
 				cam.read();
 			}
 			original = cam.get();
+			original.resize(cam.width, cam.height);
 		} else {
 			original = loadImage(LOAD_IMAGE_ADDRESS);
 		}
-		size((int)(1+2.5 * original.width), 1+original.height);
+		size((int)(2.5 * original.width), original.height);
 		
 		PImage modifiedImg;
 
@@ -70,7 +72,7 @@ public final class ImageProcessing extends PApplet {
 		hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
-		houghed.resize(1+original.width/2, 1+original.height);
+		houghed.resize(original.width/2, original.height);
 		image(houghed, original.width, 0);
 
 		// Sobel
