@@ -2,7 +2,9 @@ package cs211.imageprocessing;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.core.PVector;
 import processing.video.Capture;
+import java.util.List;
 
 /**
  * @author Jonathan Collaud
@@ -14,7 +16,7 @@ import processing.video.Capture;
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
 	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
-	private static final boolean WITH_WEBCAM = true;
+	private static final boolean WITH_WEBCAM = false;
 	
 	private Capture cam;
 
@@ -69,7 +71,7 @@ public final class ImageProcessing extends PApplet {
 
 		// Original avec lignes
 		image(original, 0, 0);
-		hough.displayLinesAndGetCorners(modifiedImg);
+		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
 		houghed.resize(original.width/2, original.height);
@@ -77,7 +79,11 @@ public final class ImageProcessing extends PApplet {
 
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
-
-		// getIntersections(h.getBestCandidates());
+		
+		TwoDThreeD blabla = new TwoDThreeD(original.width, original.height);
+		
+		System.out.println(Math.toDegrees(blabla.get3DRotations(corners).x) + ", " +
+				Math.toDegrees(blabla.get3DRotations(corners).y) + ", " +
+				Math.toDegrees(blabla.get3DRotations(corners).z));
 	}
 }

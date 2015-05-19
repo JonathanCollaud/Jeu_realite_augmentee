@@ -9,8 +9,8 @@ import papaya.*;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
- * Groupe : AB
+ * 
+ *         Groupe : AB
  */
 public final class TwoDThreeD {
 
@@ -21,16 +21,17 @@ public final class TwoDThreeD {
 	static float[][] K = { { f, 0, 0 }, { 0, f, 0 }, { 0, 0, 1 } };
 
 	// Real physical coordinates of the Lego board in mm
-	static float boardSize = 380.f; // large Duplo board
-	// static float boardSize = 255.f; // smaller Lego board
+	// static float boardSize = 380.f; // large Duplo board
+	static float boardSize = 255.f; // smaller Lego board
 
 	// the 3D coordinates of the physical board corners, clockwise
 	static float[][] physicalCorners = {
-	// TODO:
-	// Store here the 3D coordinates of the corners of
-	// the real Lego board, in homogenous coordinates
-	// and clockwise.
-	};
+			// TODO: done
+			// Store here the 3D coordinates of the corners of
+			// the real Lego board, in homogenous coordinates
+			// and clockwise.
+			{ -128, -128, 0, 1 }, { 128, -128, 0, 1 }, { 128, 128, 0, 1 },
+			{ -128, 128, 0, 1 } };
 
 	public TwoDThreeD(int width, int height) {
 
@@ -47,15 +48,20 @@ public final class TwoDThreeD {
 
 		// 2 - Re-build a proper 3x3 rotation matrix from the camera's
 		// extrinsic matrix E
-		float[] firstColumn = { (float) E[0][0], (float) E[1][0], (float) E[2][0] };
+		float[] firstColumn = { (float) E[0][0], (float) E[1][0],
+				(float) E[2][0] };
 		firstColumn = Mat.multiply(firstColumn, 1 / Mat.norm2(firstColumn)); // normalize
 
-		float[] secondColumn = { (float) E[0][1], (float) E[1][1], (float) E[2][1] };
+		float[] secondColumn = { (float) E[0][1], (float) E[1][1],
+				(float) E[2][1] };
 		secondColumn = Mat.multiply(secondColumn, 1 / Mat.norm2(secondColumn)); // normalize
 
 		float[] thirdColumn = Mat.cross(firstColumn, secondColumn);
 
-		float[][] rotationMatrix = { { firstColumn[0], secondColumn[0], thirdColumn[0] }, { firstColumn[1], secondColumn[1], thirdColumn[1] }, { firstColumn[2], secondColumn[2], thirdColumn[2] } };
+		float[][] rotationMatrix = {
+				{ firstColumn[0], secondColumn[0], thirdColumn[0] },
+				{ firstColumn[1], secondColumn[1], thirdColumn[1] },
+				{ firstColumn[2], secondColumn[2], thirdColumn[2] } };
 
 		// 3 - Computes and returns Euler angles (rx, ry, rz) from this matrix
 		return rotationFromMatrix(rotationMatrix);
@@ -63,82 +69,86 @@ public final class TwoDThreeD {
 	}
 
 	private double[][] solveExtrinsicMatrix(List<PVector> points2D) {
-	
+
 		// p ~= K � [R|t] � P
-		// with P the (3D) corners of the physical board, p the (2D) 
-		// projected points onto the webcam image, K the intrinsic 
-		// matrix and R and t the rotation and translation we want to 
+		// with P the (3D) corners of the physical board, p the (2D)
+		// projected points onto the webcam image, K the intrinsic
+		// matrix and R and t the rotation and translation we want to
 		// compute.
 		//
 		// => We want to solve: (K^(-1) � p) X ([R|t] � P) = 0
-		
-		//float [][] invK=Mat.inverse(K);
-		
+
+		float [][] invK=Mat.inverse(K);
+
 		float[][] projectedCorners = new float[4][3];
+
+		float[][] physicalCoplanarCorners = {{ -128, -128, 1 }, { 128, -128, 1 }, { 128, 128, 1 },
+				{ -128, 128, 1 } };
 		
-		for(int i=0;i<4;i++){
-		    // TODO:
-		    // store in projectedCorners the result of (K^(-1) � p), for each 
-		    // corner p found in the webcam image.
-		    // You can use Mat.multiply to multiply a matrix with a vector.
+		for (int i = 0; i < 4; i++) {
+			// TODO:
+			// store in projectedCorners the result of (K^(-1) � p), for each
+			// corner p found in the webcam image.
+			// You can use Mat.multiply to multiply a matrix with a vector.
+			projectedCorners[i] = Mat.multiply(invK, physicalCoplanarCorners[i]);
 		}
-		
+
 		// 'A' contains the cross-product (K^(-1) � p) X P
-	    float[][] A= new float[12][9];
-	    
-	    for(int i=0;i<4;i++){
-	      A[i*3][0]=0;
-	      A[i*3][1]=0;
-	      A[i*3][2]=0;
-	      
-	      // note that we take physicalCorners[0,1,*3*]: we drop the Z
-	      // coordinate and use the 2D homogenous coordinates of the physical
-	      // corners
-	      A[i*3][3]=-projectedCorners[i][2] * physicalCorners[i][0];
-	      A[i*3][4]=-projectedCorners[i][2] * physicalCorners[i][1];
-	      A[i*3][5]=-projectedCorners[i][2] * physicalCorners[i][3];
+		float[][] A = new float[12][9];
 
-	      A[i*3][6]= projectedCorners[i][1] * physicalCorners[i][0];
-	      A[i*3][7]= projectedCorners[i][1] * physicalCorners[i][1];
-	      A[i*3][8]= projectedCorners[i][1] * physicalCorners[i][3];
+		for (int i = 0; i < 4; i++) {
+			A[i * 3][0] = 0;
+			A[i * 3][1] = 0;
+			A[i * 3][2] = 0;
 
-	      A[i*3+1][0]= projectedCorners[i][2] * physicalCorners[i][0];
-	      A[i*3+1][1]= projectedCorners[i][2] * physicalCorners[i][1];
-	      A[i*3+1][2]= projectedCorners[i][2] * physicalCorners[i][3];
-	      
-	      A[i*3+1][3]=0;
-	      A[i*3+1][4]=0;
-	      A[i*3+1][5]=0;
-	      
-	      A[i*3+1][6]=-projectedCorners[i][0] * physicalCorners[i][0];
-	      A[i*3+1][7]=-projectedCorners[i][0] * physicalCorners[i][1];
-	      A[i*3+1][8]=-projectedCorners[i][0] * physicalCorners[i][3];
+			// note that we take physicalCorners[0,1,*3*]: we drop the Z
+			// coordinate and use the 2D homogenous coordinates of the physical
+			// corners
+			A[i * 3][3] = -projectedCorners[i][2] * physicalCorners[i][0];
+			A[i * 3][4] = -projectedCorners[i][2] * physicalCorners[i][1];
+			A[i * 3][5] = -projectedCorners[i][2] * physicalCorners[i][3];
 
-	      A[i*3+2][0]=-projectedCorners[i][1] * physicalCorners[i][0];
-	      A[i*3+2][1]=-projectedCorners[i][1] * physicalCorners[i][1];
-	      A[i*3+2][2]=-projectedCorners[i][1] * physicalCorners[i][3];
-	      
-	      A[i*3+2][3]= projectedCorners[i][0] * physicalCorners[i][0];
-	      A[i*3+2][4]= projectedCorners[i][0] * physicalCorners[i][1];
-	      A[i*3+2][5]= projectedCorners[i][0] * physicalCorners[i][3];
-	      
-	      A[i*3+2][6]=0;
-	      A[i*3+2][7]=0;
-	      A[i*3+2][8]=0;
-	    }
+			A[i * 3][6] = projectedCorners[i][1] * physicalCorners[i][0];
+			A[i * 3][7] = projectedCorners[i][1] * physicalCorners[i][1];
+			A[i * 3][8] = projectedCorners[i][1] * physicalCorners[i][3];
 
-	    SVD svd=new SVD(A);
-	    
-	    double[][] V = svd.getV();
-	    
-	    double[][] E = new double[3][3];
-	    
-	    //E is the last column of V
-	    for(int i=0;i<9;i++){
-	    	E[i/3][i%3] = V[i][V.length-1] / V[8][V.length-1];
-	    }
-	    
-	    return E;
+			A[i * 3 + 1][0] = projectedCorners[i][2] * physicalCorners[i][0];
+			A[i * 3 + 1][1] = projectedCorners[i][2] * physicalCorners[i][1];
+			A[i * 3 + 1][2] = projectedCorners[i][2] * physicalCorners[i][3];
+
+			A[i * 3 + 1][3] = 0;
+			A[i * 3 + 1][4] = 0;
+			A[i * 3 + 1][5] = 0;
+
+			A[i * 3 + 1][6] = -projectedCorners[i][0] * physicalCorners[i][0];
+			A[i * 3 + 1][7] = -projectedCorners[i][0] * physicalCorners[i][1];
+			A[i * 3 + 1][8] = -projectedCorners[i][0] * physicalCorners[i][3];
+
+			A[i * 3 + 2][0] = -projectedCorners[i][1] * physicalCorners[i][0];
+			A[i * 3 + 2][1] = -projectedCorners[i][1] * physicalCorners[i][1];
+			A[i * 3 + 2][2] = -projectedCorners[i][1] * physicalCorners[i][3];
+
+			A[i * 3 + 2][3] = projectedCorners[i][0] * physicalCorners[i][0];
+			A[i * 3 + 2][4] = projectedCorners[i][0] * physicalCorners[i][1];
+			A[i * 3 + 2][5] = projectedCorners[i][0] * physicalCorners[i][3];
+
+			A[i * 3 + 2][6] = 0;
+			A[i * 3 + 2][7] = 0;
+			A[i * 3 + 2][8] = 0;
+		}
+
+		SVD svd = new SVD(A);
+
+		double[][] V = svd.getV();
+
+		double[][] E = new double[3][3];
+
+		// E is the last column of V
+		for (int i = 0; i < 9; i++) {
+			E[i / 3][i % 3] = V[i][V.length - 1] / V[8][V.length - 1];
+		}
+
+		return E;
 
 	}
 
@@ -164,8 +174,10 @@ public final class TwoDThreeD {
 		}
 
 		rot.y = -(float) Math.asin(mat[2][0]);
-		rot.x = (float) Math.atan2(mat[2][1] / Math.cos(rot.y), mat[2][2] / Math.cos(rot.y));
-		rot.z = (float) Math.atan2(mat[1][0] / Math.cos(rot.y), mat[0][0] / Math.cos(rot.y));
+		rot.x = (float) Math.atan2(mat[2][1] / Math.cos(rot.y), mat[2][2]
+				/ Math.cos(rot.y));
+		rot.z = (float) Math.atan2(mat[1][0] / Math.cos(rot.y), mat[0][0]
+				/ Math.cos(rot.y));
 
 		return rot;
 	}

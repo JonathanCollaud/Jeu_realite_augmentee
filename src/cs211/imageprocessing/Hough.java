@@ -43,7 +43,7 @@ public final class Hough {
 		this.p = p;
 	}
 
-	public void displayLinesAndGetCorners(PImage img) {
+	public List<PVector> displayLinesAndGetCorners(PImage img) {
 		// Si l’accumulator n’as pas été crée avec une autre image
 		if (accumulator == null) {
 			computeLines(img);
@@ -102,7 +102,8 @@ public final class Hough {
 		}
 
 		if (quads.getCycles().isEmpty()) {
-			System.err.println("Pas de quad suffisant.");
+			System.out.println("Pas de quad suffisant.");
+			return null;
 		} else {
 
 			/**
@@ -114,7 +115,7 @@ public final class Hough {
 
 			for (int i = 0; i < 4; ++i) {
 				PVector line = lines.get(quad[i]);
-				// On recr�e une collection avec juste les quatres meilleures
+				// On recr�e une collection avec juste les quatres meilleures
 				// lignes
 				finalLines.add(line);
 
@@ -146,10 +147,12 @@ public final class Hough {
 					} else
 						p.line(x2, y2, x3, y3);
 				}
+				
 			}
 
-			// Prints intersections
+			// Prints and return intersections
 			getIntersections(finalLines);
+			return finalLines;
 		}
 	}
 
