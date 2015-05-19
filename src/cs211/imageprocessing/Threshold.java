@@ -14,7 +14,7 @@ public final class Threshold extends Filter {
 	private static final float MIN_HUE = 30;
 	private static final float MAX_HUE = 140;
 	private static final float MIN_BRIGHTNESS = 20;
-	private static final float MAX_BRIGHTNESS = 200;
+	private static final float MAX_BRIGHTNESS = 1000;
 	private static final float MIN_SATURATION = 80;
 	private static final float MAX_SATURATION = 300;
 	private static final float MIN_INTENSITY = 50;
