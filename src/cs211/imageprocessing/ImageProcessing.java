@@ -16,7 +16,7 @@ import java.util.List;
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
 	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
-	private static final boolean WITH_WEBCAM = false;
+	private static final boolean WITH_WEBCAM = true;
 	
 	private Capture cam;
 
@@ -40,7 +40,7 @@ public final class ImageProcessing extends PApplet {
 					println(cameras[i]);
 				}
 				cam = new Capture(this, cameras[3]);
-				System.out.println(cam.width +" ; "+ cam.height);
+//				System.out.println(cam.width +" ; "+ cam.height);
 				cam.start();
 			}
 		}
@@ -54,11 +54,11 @@ public final class ImageProcessing extends PApplet {
 				cam.read();
 			}
 			original = cam.get();
-			original.resize(cam.width, cam.height);
+//			original.resize(1 + cam.width, 1 + cam.height);
 		} else {
 			original = loadImage(LOAD_IMAGE_ADDRESS);
 		}
-		size((int)(2.5 * original.width), original.height);
+		size((int)(1+2.5 * original.width), 1+original.height);
 		
 		PImage modifiedImg;
 
@@ -74,8 +74,8 @@ public final class ImageProcessing extends PApplet {
 		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
-		houghed.resize(original.width/2, original.height);
-		image(houghed, original.width, 0);
+		houghed.resize(1 + original.width/2, original.height);
+		image(houghed, 1 + original.width, 0);
 
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
