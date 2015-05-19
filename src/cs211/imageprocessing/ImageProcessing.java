@@ -16,7 +16,7 @@ import java.util.List;
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
 	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
-	private static final boolean WITH_WEBCAM = true;
+	private static final boolean WITH_WEBCAM = false;
 	
 	private Capture cam;
 
@@ -80,10 +80,11 @@ public final class ImageProcessing extends PApplet {
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
 		
-		TwoDThreeD blabla = new TwoDThreeD(original.width, original.height);
+		TwoDThreeD mapping = new TwoDThreeD(original.width, original.height);
+		PVector anglesInRadians = mapping.get3DRotations(corners);
 		
-		System.out.println(Math.toDegrees(blabla.get3DRotations(corners).x) + ", " +
-				Math.toDegrees(blabla.get3DRotations(corners).y) + ", " +
-				Math.toDegrees(blabla.get3DRotations(corners).z));
+		System.out.println(Math.toDegrees(anglesInRadians.x) + ", " +
+				Math.toDegrees(anglesInRadians.y) + ", " +
+				Math.toDegrees(anglesInRadians.z));
 	}
 }

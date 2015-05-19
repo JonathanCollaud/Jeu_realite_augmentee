@@ -1,9 +1,11 @@
 package cs211.imageprocessing;
 
+import java.util.Collections;
 import java.util.List;
 
+import papaya.Mat;
+import papaya.SVD;
 import processing.core.PVector;
-import papaya.*;
 
 /**
  * @author Jonathan Collaud
@@ -78,19 +80,16 @@ public final class TwoDThreeD {
 		//
 		// => We want to solve: (K^(-1) � p) X ([R|t] � P) = 0
 
-		float [][] invK=Mat.inverse(K);
+		float[][] invK = Mat.inverse(K);
 
 		float[][] projectedCorners = new float[4][3];
 
-		float[][] physicalCoplanarCorners = {{ -128, -128, 1 }, { 128, -128, 1 }, { 128, 128, 1 },
-				{ -128, 128, 1 } };
-		
 		for (int i = 0; i < 4; i++) {
 			// TODO:
 			// store in projectedCorners the result of (K^(-1) � p), for each
 			// corner p found in the webcam image.
 			// You can use Mat.multiply to multiply a matrix with a vector.
-			projectedCorners[i] = Mat.multiply(invK, physicalCoplanarCorners[i]);
+			projectedCorners[i] = Mat.multiply(invK, points2D.get(i).array());
 		}
 
 		// 'A' contains the cross-product (K^(-1) � p) X P
@@ -180,5 +179,21 @@ public final class TwoDThreeD {
 				/ Math.cos(rot.y));
 
 		return rot;
+	}
+
+	public static List<PVector> sortCorners(List<PVector> quad) {
+		// Sort corners so that they are ordered clockwise
+		PVector a = quad.get(0);
+		PVector b = quad.get(2);
+		PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
+		Collections.sort(quad, new CWComparator(center));
+		// TODO:
+		// Re-order the corners so that the first one is the closest to the
+		// origin (0,0) of the image.
+		//
+		// You can use Collections.rotate to shift the corners inside the quad.
+		//Collections.rotate((List<PVector>)quad, Collections.min(quad, new CWComparator(center)));
+		
+		return quad;
 	}
 }
