@@ -153,14 +153,14 @@ public final class Hough {
 			List<PVector> intersections = getIntersections(finalLines);
 
 			if (intersections.size() >= 4) {
-				return TwoDThreeD.sortCorners(getFourCorners(intersections));
+				return TwoDThreeD.sortCorners(getFourCorners(intersections, img.width, img.height));
 			} else {
 				return null;
 			}
 		}
 	}
 
-	private List<PVector> getFourCorners(List<PVector> intersections) {
+	private List<PVector> getFourCorners(List<PVector> intersections, int width, int height) {
 		if (intersections.size() < 4) {
 			return null;
 		}
@@ -176,6 +176,8 @@ public final class Hough {
 		for (Iterator<PVector> iterator = intersections.iterator(); iterator
 				.hasNext();) {
 			PVector corner = (PVector) iterator.next();
+			corner.x -= width/2;
+			corner.y -= height/2;
 			if (corner.dist(origin) < clo4.dist(origin)) {
 				if (corner.dist(origin) < clo3.dist(origin)) {
 					if (corner.dist(origin) < clo2.dist(origin)) {

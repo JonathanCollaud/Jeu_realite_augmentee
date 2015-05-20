@@ -1,7 +1,6 @@
 package cs211.imageprocessing;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import papaya.Mat;
@@ -24,8 +23,8 @@ public final class TwoDThreeD {
 	static float[][] K = { { f, 0, 0 }, { 0, f, 0 }, { 0, 0, 1 } };
 
 	// Real physical coordinates of the Lego board in mm
-	// static float boardSize = 380.f; // large Duplo board
-	static float boardSize = 255.f; // smaller Lego board
+	static float boardSize = 380.f; // large Duplo board
+	// static float boardSize = 255.f; // smaller Lego board
 
 	// the 3D coordinates of the physical board corners, clockwise
 	static float[][] physicalCorners = {
@@ -33,8 +32,10 @@ public final class TwoDThreeD {
 			// Store here the 3D coordinates of the corners of
 			// the real Lego board, in homogenous coordinates
 			// and clockwise.
-			{ -128, -128, 0, 1 }, { 128, -128, 0, 1 }, { 128, 128, 0, 1 },
-			{ -128, 128, 0, 1 } };
+			{ -boardSize / 2, -boardSize / 2, 0, 1 },
+			{ boardSize / 2, -boardSize / 2, 0, 1 },
+			{ boardSize / 2, boardSize / 2, 0, 1 },
+			{ -boardSize / 2, boardSize / 2, 0, 1 } };
 
 	public TwoDThreeD(int width, int height) {
 
@@ -85,13 +86,18 @@ public final class TwoDThreeD {
 
 		float[][] projectedCorners = new float[4][3];
 
+		System.out.print("Projected corners coordinates: [");
 		for (int i = 0; i < 4; i++) {
 			// TODO:
 			// store in projectedCorners the result of (K^(-1) � p), for each
 			// corner p found in the webcam image.
 			// You can use Mat.multiply to multiply a matrix with a vector.
 			projectedCorners[i] = Mat.multiply(invK, points2D.get(i).array());
+			System.out.print("[" + projectedCorners[i][0] + ", "
+					+ projectedCorners[i][1] + ", " + projectedCorners[i][2]
+					+ "], ");
 		}
+		System.out.println("]");
 
 		// 'A' contains the cross-product (K^(-1) � p) X P
 		float[][] A = new float[12][9];
@@ -187,6 +193,7 @@ public final class TwoDThreeD {
 		PVector a = quad.get(0);
 		PVector b = quad.get(2);
 		PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
+		PVector origin = new PVector(0, 0);
 		Collections.sort(quad, new CWComparator(center));
 		// TODO:
 		// Re-order the corners so that the first one is the closest to the
@@ -196,16 +203,17 @@ public final class TwoDThreeD {
 
 		int i = 0;
 		while (i < quad.size() - 1
-				&& quad.get(i).dist(center) > quad.get(++i).dist(center))
+				&& quad.get(i).dist(origin) > quad.get(++i).dist(origin))
 			;
 
-		Collections.rotate(quad, i);
+		Collections.rotate(quad, 1 - i);
 
-		for (Iterator<PVector> it = quad.iterator(); it.hasNext();) {
-			PVector vertex = (PVector) it.next();
-			System.out.println(quad.indexOf(vertex) + ": " + vertex.x + ", "
-					+ vertex.y);
-		}
+		System.out
+				.println("Corner coordinates on the image: ["
+						+ quad.get(0).toString() + ", "
+						+ quad.get(1).toString() + ", "
+						+ quad.get(2).toString() + ", "
+						+ quad.get(3).toString() + " ]");
 
 		return quad;
 	}

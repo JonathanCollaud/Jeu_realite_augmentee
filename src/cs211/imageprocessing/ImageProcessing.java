@@ -71,7 +71,6 @@ public final class ImageProcessing extends PApplet {
 
 		// Original avec lignes
 		image(original, 0, 0);
-		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg);
 
 		// Hough
 		houghed.resize(1 + original.width / 2, original.height);
@@ -79,11 +78,15 @@ public final class ImageProcessing extends PApplet {
 
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
-		
+
+		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg);
+
 		if (corners.size() == 4) {
 			TwoDThreeD mapping = new TwoDThreeD(original.width, original.height);
+
 			PVector anglesInRadians = mapping.get3DRotations(corners);
-			System.out.println((int) Math.toDegrees(anglesInRadians.x) + ", "
+			System.out.println("Board rotations: "
+					+ (int) Math.toDegrees(anglesInRadians.x) + ", "
 					+ (int) Math.toDegrees(anglesInRadians.y) + ", "
 					+ (int) Math.toDegrees(anglesInRadians.z));
 		}
