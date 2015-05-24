@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 
@@ -12,18 +13,22 @@ public class Game extends PApplet {
 	/**
 	 * Global parameters
 	 */
-	public static final float AMBI = 220;
-	public static final float BG_COLOR = 255;
+	private static final int WINDOW_WIDTH = 800;
+	private static final int GAME_WINDOW_HEIGHT = 500;
+	private static final int BOTTOM_RECT_HEIGHT = 100;
+
+	public static final float AMBI = 220f;
+	public static final float BG_COLOR = 255f;
 
 	public static final float MAX_ROTATION = radians(60);
 
-	public static final float PLATE_WIDTH = 600;
-	public static final float PLATE_HEIGHT = 10;
+	public static final float PLATE_WIDTH = 600f;
+	public static final float PLATE_HEIGHT = 10f;
 
 	public final float PAUSE_HEIGHT = -PLATE_WIDTH;
 
 	public final float BASE_CAM_ROTATION = 0;
-	public final float BASE_CAM_ALTITUDE = -PLATE_WIDTH / 2;
+	public final float BASE_CAM_ALTITUDE = -PLATE_WIDTH;
 	public final float BASE_CAM_POSITION = -PLATE_WIDTH;
 
 	/**
@@ -32,42 +37,48 @@ public class Game extends PApplet {
 	private boolean paused = false;
 	private boolean editable = false;
 	private float viewTransform = PAUSE_HEIGHT / 520;
+
 	private float rotate_x = 0;
 	private float rotate_y = 0;
 	private float rotate_z = 0;
+
 	private float cam_rot = BASE_CAM_ROTATION;
 	private float cam_pos = BASE_CAM_POSITION;
 	private float cam_alt = BASE_CAM_ALTITUDE;
+
 	private float rotation_increment = 0.1f;
 	private float tiltSpeed = 1f;
+
 	private Mover mover;
 	private List<PVector> bumps = new ArrayList<>();
+
 	private float edit_x = 0;
 	private float edit_z = 0;
 
+	// Graphics
+	private PGraphics gameWindow;
+	private PGraphics bottomRect;
+	private PGraphics topView;
+
 	@Override
 	public void setup() {
-		size(800, 600, P3D);
-		noStroke(); // disable the outline
+		size(WINDOW_WIDTH, GAME_WINDOW_HEIGHT + BOTTOM_RECT_HEIGHT, P3D);
 		mover = new Mover(this);
+		gameWindow = createGraphics(WINDOW_WIDTH, GAME_WINDOW_HEIGHT, P3D);
+		bottomRect = createGraphics(WINDOW_WIDTH, BOTTOM_RECT_HEIGHT, P2D);
+		topView = createGraphics(BOTTOM_RECT_HEIGHT - 10,
+				BOTTOM_RECT_HEIGHT - 10, P2D);
 	}
 
 	@Override
 	public void draw() {
-		// Camera and lighting
-		displayCamera();
-		directionalLight(10, 10, 10, 1, -1, -1);
-		ambientLight(AMBI, AMBI, AMBI);
-		background(BG_COLOR);
-
-		// G�re le d�placement de la balle et de la plate
-		playGame();
-
-		// Information text
-		textSize(15);
-		text("rotation : " + Math.round(rotation_increment * 100.0) / 100.0,
-				500, 15);
-		text("tilt speed : " + tiltSpeed, 500, 35);
+		// Gère le déplacement de la balle et de la plaque
+		drawGameWindow();
+		image(gameWindow, 0, 0);
+		drawBottomRect();
+		image(bottomRect, 0, GAME_WINDOW_HEIGHT);
+		drawTopView();
+		image(topView, 5, GAME_WINDOW_HEIGHT + 5);
 	}
 
 	// D�place la cam�ra si le jeu est mis sur pause avec shift
@@ -100,16 +111,16 @@ public class Game extends PApplet {
 			}
 		}
 		// Display camera
-		camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
+		gameWindow.camera(cam_pos, cam_alt, 0, cam_rot, 0, 0, 0, 1, 0);
 	}
 
 	private void playGame() {
-		pushMatrix();
+		gameWindow.pushMatrix();
 
 		// Animated stuff
 		if (!paused) {
 			// Plate rotation
-			rotateY(rotate_y);
+			gameWindow.rotateY(rotate_y);
 
 			rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
 					-MAX_ROTATION);
@@ -127,50 +138,50 @@ public class Game extends PApplet {
 
 			if (paused) {
 
-				pushMatrix();
+				gameWindow.pushMatrix();
 
 				// On va corriger la position 3D de la souris par rapport � o�
 				// elle pointe avec viewTransform
 				edit_x = (mouseY - height / 2) * viewTransform;
 				edit_z = -(mouseX - width / 2) * viewTransform;
-				translate(edit_x, 0, edit_z);
+				gameWindow.translate(edit_x, 0, edit_z);
 
 				if (collides(Cylinder.CYLINDER_BASE_RADIUS, edit_x, edit_z)) {
-					fill(color(170, 40, 40));
+					gameWindow.fill(color(255, 0, 0, 50));
 					editable = false;
 				} else {
-					fill(color(40, 170, 40));
+					gameWindow.fill(color(255, 0, 0));
 					editable = true;
 				}
 
-				Cylinder cursorCylinder = new Cylinder(this);
+				Cylinder cursorCylinder = new Cylinder(gameWindow);
 				cursorCylinder.draw();
 
-				popMatrix();
+				gameWindow.popMatrix();
 			}
 		}
 
-		rotateX(rotate_x);
-		rotateZ(rotate_z);
+		gameWindow.rotateX(rotate_x);
+		gameWindow.rotateZ(rotate_z);
 
 		// Display plate
-		fill(color(167, 219, 216));
-		box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
+		gameWindow.fill(color(75, 151, 74));
+		gameWindow.box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
 		// Display cylinders
-		fill(color(105, 210, 231));
+		gameWindow.fill(color(255, 0, 0));
 		for (PVector bump : bumps) {
-			pushMatrix();
-			translate(bump.x, 0, bump.y);
-			(new Cylinder(this)).draw();
-			popMatrix();
+			gameWindow.pushMatrix();
+			gameWindow.translate(bump.x, 0, bump.z);
+			(new Cylinder(gameWindow)).draw();
+			gameWindow.popMatrix();
 		}
 
 		// Display ball
-		fill(color(224, 228, 204));
-		mover.display();
+		gameWindow.fill(color(0, 0, 255));
+		mover.display(gameWindow);
 
-		popMatrix();
+		gameWindow.popMatrix();
 
 	}
 
@@ -247,7 +258,73 @@ public class Game extends PApplet {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (editable) {
-			bumps.add(new PVector(edit_x, edit_z));
+			bumps.add(new PVector(edit_x, 0, edit_z));
 		}
+	}
+
+	// Graphics drawing
+	void drawGameWindow() {
+		// Caméra et éclairage
+		gameWindow.beginDraw();
+
+		gameWindow.noStroke(); // désactive l'affichage des lignes extérieures
+		gameWindow.directionalLight(100, 100, 100, 1, 1, -1);
+		gameWindow.ambientLight(AMBI, AMBI, AMBI);
+		gameWindow.background(BG_COLOR);
+
+		pushMatrix();
+		gameWindow.translate(-10, -10, 10);
+		playGame();
+		popMatrix();
+		displayCamera();
+
+		gameWindow.endDraw();
+	}
+
+	void drawBottomRect() {
+		bottomRect.beginDraw();
+		bottomRect.background(255, 255, 200);
+		bottomRect
+				.rect(0, GAME_WINDOW_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
+		bottomRect.endDraw();
+
+		// Texte d'information
+		bottomRect.beginDraw();
+		bottomRect.fill(0);
+		bottomRect.textSize(15);
+		bottomRect.text("tilt speed : " + Math.round(tiltSpeed * 100) / 100.0,
+				BOTTOM_RECT_HEIGHT + 10, 20);
+		bottomRect.endDraw();
+	}
+
+	void drawTopView() {
+		topView.beginDraw();
+		topView.noStroke();
+
+		// Draw the plate
+		topView.fill(75, 151, 74);
+		topView.rect(0, 0, BOTTOM_RECT_HEIGHT - 10, BOTTOM_RECT_HEIGHT - 10);
+
+		// Draw the ball
+		topView.fill(0, 0, 255);
+		topView.ellipse((BOTTOM_RECT_HEIGHT - 10) / 2 + mover.z()
+				* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH,
+				(BOTTOM_RECT_HEIGHT - 10) / 2 - mover.x()
+						* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH,
+				Mover.BALL_SIZE * 2 * (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH,
+				Mover.BALL_SIZE * 2 * (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH);
+
+		// Draw the bumps
+		topView.fill(255, 0, 0);
+		for (PVector bump : bumps) {
+			topView.ellipse((BOTTOM_RECT_HEIGHT - 10) / 2 + bump.z
+					* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH,
+					(BOTTOM_RECT_HEIGHT - 10) / 2 - bump.x
+							* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH, 50
+							* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH, 50
+							* (BOTTOM_RECT_HEIGHT - 10) / PLATE_WIDTH);
+		}
+
+		topView.endDraw();
 	}
 }

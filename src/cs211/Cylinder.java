@@ -1,6 +1,7 @@
 package cs211;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PShape;
 
 @SuppressWarnings("serial")
@@ -10,11 +11,11 @@ public class Cylinder extends PApplet {
 	public final static float CYLINDER_HEIGHT = 20;
 	public final static int CYLINDER_RESOLUTION = 20;
 
-	private PApplet applet;
+	private PGraphics graphic;
 	private PShape cylinder = new PShape();
 
-	public Cylinder(PApplet applet) {
-		this.applet = applet;
+	public Cylinder(PGraphics gameWindow) {
+		this.graphic = gameWindow;
 
 		float angle;
 		float[] x = new float[CYLINDER_RESOLUTION + 1];
@@ -26,7 +27,7 @@ public class Cylinder extends PApplet {
 			x[i] = (float) Math.sin(angle) * CYLINDER_BASE_RADIUS;
 			z[i] = (float) Math.cos(angle) * CYLINDER_BASE_RADIUS;
 		}
-		cylinder = applet.createShape();
+		cylinder = graphic.createShape();
 
 		drawCap(-Game.PLATE_HEIGHT / 2);
 		drawSides(-Game.PLATE_HEIGHT / 2, -Game.PLATE_HEIGHT / 2
@@ -41,11 +42,11 @@ public class Cylinder extends PApplet {
 
 		cylinder.beginShape(TRIANGLE_STRIP);
 		// pourtour
-		for (int i = 0; i <= CYLINDER_RESOLUTION + 1; i++) {
-			cylinder.vertex(0, height, 0);
+		for (int i = 0; i <= CYLINDER_RESOLUTION; i++) {
 			float px = cos(radians((int) (i * angle))) * CYLINDER_BASE_RADIUS;
 			float pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
 			cylinder.vertex(px, height, pz);
+			cylinder.vertex(0, height, 0);
 		}
 		cylinder.endShape();
 
@@ -53,7 +54,6 @@ public class Cylinder extends PApplet {
 
 	// draw the border of the cylinder
 	private void drawSides(float bottomHeight, float topHeight) {
-
 		cylinder.beginShape(TRIANGLE_STRIP);
 		int angle = 360 / CYLINDER_RESOLUTION;
 
@@ -68,6 +68,6 @@ public class Cylinder extends PApplet {
 	}
 
 	public void draw() {
-		applet.shape(cylinder);
+		graphic.shape(cylinder);
 	}
 }

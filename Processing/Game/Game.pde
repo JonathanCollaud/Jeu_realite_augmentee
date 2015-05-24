@@ -15,9 +15,10 @@ private static final float MAX_ROTATION = radians(60);
 
 private static final float PLATE_WIDTH = 300;
 private static final float PLATE_HEIGHT = 5;
+
 private static final float BUMPS_RADIUS = 20;
 
-private final float PAUSE_HEIGHT = -300;
+private final float PAUSE_HEIGHT = -PLATE_WIDTH;
 
 private final float BASE_CAM_ROTATION = 0;
 private final float BASE_CAM_ALTITUDE = -350;

@@ -2,18 +2,19 @@ package cs211;
 
 import java.util.List;
 
-import processing.core.*;
+import processing.core.PGraphics;
+import processing.core.PVector;
 
 public class Mover {
 
 	public static final float GRAVITY_CONSTANT = 10f;
-	public static final float BALL_MASS = 1f;
+	public static final float BALL_MASS = 10f;
 	public static final float BALL_SIZE = 5f;
 
 	// Ball positioning
 	private float normalForce = 1f;
-	private float mu = 1f;
-	private float frictionMagnitude = normalForce * mu * BALL_MASS;
+	private float mu = 5f;
+	private float frictionMagnitude = normalForce * mu;
 
 	private PVector ballPosition = new PVector(0, -BALL_SIZE
 			- Game.PLATE_HEIGHT / 2, 0);
@@ -44,9 +45,9 @@ public class Mover {
 		ballPosition.add(ballVelocity);
 	}
 
-	public void display() {
-		applet.translate(ballPosition.x, ballPosition.y, ballPosition.z);
-		applet.sphere(BALL_SIZE);
+	public void display(PGraphics gameWindow) {
+		gameWindow.translate(ballPosition.x, ballPosition.y, ballPosition.z);
+		gameWindow.sphere(BALL_SIZE);
 	}
 
 	public void checkEdges() {
@@ -66,17 +67,28 @@ public class Mover {
 
 	public void checkCylinderCollision() {
 		List<PVector> bumps = applet.getBumps();
+		PVector normal, multVect;
+		PVector touched = null;
+		float dx = ballPosition.x;
+		float dz = ballPosition.z;
+		float dotProd;
 		for (PVector bump : bumps) {
-			if (bump.dist(ballPosition) <= BALL_SIZE
+			dx -= bump.x;
+			dz -= bump.z;
+			if (Math.sqrt(dx * dx + dz * dz) <= BALL_SIZE
 					+ Cylinder.CYLINDER_BASE_RADIUS) {
-				PVector normal = PVector.sub(ballPosition, bump);
+				normal = PVector.sub(ballPosition, bump);
+				normal.y += BALL_SIZE * 2;
 				normal.normalize();
 
-				Float dotProd = PVector.dot(ballVelocity, normal) * 2;
-				PVector multVect = PVector.mult(normal, dotProd);
+				dotProd = PVector.dot(ballVelocity, normal);
+				multVect = PVector.mult(normal, 2 * dotProd);
+
 				ballVelocity = PVector.sub(ballVelocity, multVect);
+				touched = bump;
 			}
 		}
+		bumps.remove(touched);
 	}
 
 	public float x() {
