@@ -190,13 +190,13 @@ public class Game extends PApplet {
 		float dx = x - mover.x();
 		float dz = z - mover.z();
 
-		boolean touchBall = (dx * dx + dz * dz) < cylinderRadius
-				* cylinderRadius;
+		boolean touchBall = sqrt(dx * dx + dz * dz) < cylinderRadius
+				+ Mover.BALL_SIZE;
 
 		boolean outsidePlate = n > PLATE_WIDTH / 2 || s < -PLATE_WIDTH / 2
 				|| w < -PLATE_WIDTH / 2 || e > PLATE_WIDTH / 2;
 
-		return touchBall && outsidePlate;
+		return touchBall || outsidePlate;
 	}
 
 	/*
