@@ -1,26 +1,20 @@
 package cs211;
 
-import processing.core.*;
+import processing.core.PApplet;
+import processing.core.PShape;
 
-public class Cylinder {
+@SuppressWarnings("serial")
+public class Cylinder extends PApplet {
 
-	private final static float CYLINDER_BASE_RADIUS = 100;
-	private final static float CYLINDER_HEIGHT = 100;
-	private final static int CYLINDER_RESOLUTION = 20;
+	public final static float CYLINDER_BASE_RADIUS = 10;
+	public final static float CYLINDER_HEIGHT = 20;
+	public final static int CYLINDER_RESOLUTION = 20;
 
-	private float height;
 	private PApplet applet;
 	private PShape cylinder = new PShape();
-	private float baseRadius;
 
 	public Cylinder(PApplet applet) {
-		this(CYLINDER_HEIGHT, CYLINDER_BASE_RADIUS, applet);
-	}
-
-	public Cylinder(float height, float baseRadius, PApplet applet) {
-		this.baseRadius = baseRadius;
 		this.applet = applet;
-		this.height = -height;
 
 		float angle;
 		float[] x = new float[CYLINDER_RESOLUTION + 1];
@@ -29,51 +23,51 @@ public class Cylinder {
 		// get the x and z position on a circle for all the sides
 		for (int i = 0; i < x.length; i++) {
 			angle = ((float) Math.PI * 2 / CYLINDER_RESOLUTION) * i;
-			x[i] = (float) Math.sin(angle) * baseRadius;
-			z[i] = (float) Math.cos(angle) * baseRadius;
+			x[i] = (float) Math.sin(angle) * CYLINDER_BASE_RADIUS;
+			z[i] = (float) Math.cos(angle) * CYLINDER_BASE_RADIUS;
 		}
 		cylinder = applet.createShape();
 
-		//drawCap(x, z, 0);
-		drawSides(x, z);
-		drawCap(x, z, -height);
-
+		drawCap(-Game.PLATE_HEIGHT / 2);
+		drawSides(-Game.PLATE_HEIGHT / 2, -Game.PLATE_HEIGHT / 2
+				- CYLINDER_HEIGHT);
+		drawCap(-Game.PLATE_HEIGHT / 2 - CYLINDER_HEIGHT);
 	}
 
 	// draw the top of the cylinder
-	@SuppressWarnings("static-access")
-	private void drawCap(float[] x, float[] z, float height) {
-		cylinder.beginShape(applet.TRIANGLE_FAN);
-		
-		// point central
-		cylinder.vertex(0, height, 0);
-		
+	private void drawCap(float height) {
+
+		int angle = 360 / CYLINDER_RESOLUTION;
+
+		cylinder.beginShape(TRIANGLE_STRIP);
 		// pourtour
-		for (int i = 0; i < x.length; i++) {
-			cylinder.vertex(x[i], height, z[i]);
+		for (int i = 0; i <= CYLINDER_RESOLUTION + 1; i++) {
+			cylinder.vertex(0, height, 0);
+			float px = cos(radians((int) (i * angle))) * CYLINDER_BASE_RADIUS;
+			float pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+			cylinder.vertex(px, height, pz);
 		}
-		
-		cylinder.endShape(applet.CLOSE);
+		cylinder.endShape();
+
 	}
 
 	// draw the border of the cylinder
-	@SuppressWarnings("static-access")
-	private void drawSides(float[] x, float[] z) {
-		cylinder.beginShape(applet.QUAD_STRIP);
-		
-		for (int i = 0; i < x.length; i++) {
-			cylinder.vertex(x[i], 0, z[i]);
-			cylinder.vertex(x[i], height, z[i]);
+	private void drawSides(float bottomHeight, float topHeight) {
+
+		cylinder.beginShape(TRIANGLE_STRIP);
+		int angle = 360 / CYLINDER_RESOLUTION;
+
+		for (int i = 0; i <= CYLINDER_RESOLUTION; i++) {
+			float px = cos(radians((int) (i * angle))) * CYLINDER_BASE_RADIUS;
+			float pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+
+			cylinder.vertex(px, bottomHeight, pz);
+			cylinder.vertex(px, topHeight, pz);
 		}
-		
-		cylinder.endShape(applet.CLOSE);
+		cylinder.endShape();
 	}
 
 	public void draw() {
 		applet.shape(cylinder);
 	}
-
-	public float getSize() {
-		return baseRadius;
-	}	
 }

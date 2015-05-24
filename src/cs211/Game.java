@@ -12,19 +12,19 @@ public class Game extends PApplet {
 	/**
 	 * Global parameters
 	 */
-	private static final float AMBI = 220;
-	private static final float BG_COLOR = 255;
+	public static final float AMBI = 220;
+	public static final float BG_COLOR = 255;
 
-	private static final float MAX_ROTATION = radians(60);
+	public static final float MAX_ROTATION = radians(60);
 
-	private static final float PLATE_WIDTH = 300;
-	private static final float PLATE_HEIGHT = 5;
+	public static final float PLATE_WIDTH = 600;
+	public static final float PLATE_HEIGHT = 10;
 
-	private final float PAUSE_HEIGHT = -300;
+	public final float PAUSE_HEIGHT = -PLATE_WIDTH;
 
-	private final float BASE_CAM_ROTATION = 0;
-	private final float BASE_CAM_ALTITUDE = -160;
-	private final float BASE_CAM_POSITION = -PLATE_WIDTH;
+	public final float BASE_CAM_ROTATION = 0;
+	public final float BASE_CAM_ALTITUDE = -PLATE_WIDTH / 2;
+	public final float BASE_CAM_POSITION = -PLATE_WIDTH;
 
 	/**
 	 * Shared var
@@ -44,13 +44,12 @@ public class Game extends PApplet {
 	private List<PVector> bumps = new ArrayList<>();
 	private float edit_x = 0;
 	private float edit_z = 0;
-	float cylinderHeight = 20;
 
 	@Override
 	public void setup() {
 		size(800, 600, P3D);
 		noStroke(); // disable the outline
-		mover = new Mover(PLATE_WIDTH, PLATE_HEIGHT, this);
+		mover = new Mover(this);
 	}
 
 	@Override
@@ -114,7 +113,8 @@ public class Game extends PApplet {
 
 			rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
 					-MAX_ROTATION);
-			rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION, -MAX_ROTATION);
+			rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION,
+					-MAX_ROTATION);
 
 			// Ball
 			mover.checkEdges();
@@ -135,7 +135,7 @@ public class Game extends PApplet {
 				edit_z = -(mouseX - width / 2) * viewTransform;
 				translate(edit_x, 0, edit_z);
 
-				if (collides(cylinderHeight, edit_x, edit_z)) {
+				if (collides(Cylinder.CYLINDER_BASE_RADIUS, edit_x, edit_z)) {
 					fill(color(170, 40, 40));
 					editable = false;
 				} else {
@@ -143,7 +143,7 @@ public class Game extends PApplet {
 					editable = true;
 				}
 
-				Cylinder cursorCylinder = new Cylinder(cylinderHeight, 20, this);
+				Cylinder cursorCylinder = new Cylinder(this);
 				cursorCylinder.draw();
 
 				popMatrix();
@@ -162,7 +162,7 @@ public class Game extends PApplet {
 		for (PVector bump : bumps) {
 			pushMatrix();
 			translate(bump.x, 0, bump.y);
-			(new Cylinder(cylinderHeight, 20, this)).draw();
+			(new Cylinder(this)).draw();
 			popMatrix();
 		}
 
@@ -180,16 +180,18 @@ public class Game extends PApplet {
 
 	// V�rifie qu�on puisse poser le cylindre (pas en dehors du terrain, ou sur
 	// la balle)
-	private boolean collides(float cylinderSize, float x, float z) {
+	private boolean collides(float cylinderRadius, float x, float z) {
 
-		float n = x + cylinderSize;
-		float s = x - cylinderSize;
-		float e = z + cylinderSize;
-		float w = z - cylinderSize;
+		float n = x + cylinderRadius;
+		float s = x - cylinderRadius;
+		float e = z + cylinderRadius;
+		float w = z - cylinderRadius;
 
-		boolean touchBall = true;
-		// (e < mover.x() || w > mover.x())
-		// && (n < mover.z() || s > mover.z());
+		float dx = x - mover.x();
+		float dz = z - mover.z();
+
+		boolean touchBall = (dx * dx + dz * dz) < cylinderRadius
+				* cylinderRadius;
 
 		boolean outsidePlate = n > PLATE_WIDTH / 2 || s < -PLATE_WIDTH / 2
 				|| w < -PLATE_WIDTH / 2 || e > PLATE_WIDTH / 2;
