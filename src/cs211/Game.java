@@ -55,6 +55,8 @@ public class Game extends PApplet {
 	private float edit_x = 0;
 	private float edit_z = 0;
 
+	private static float score = 0;
+
 	// Graphics
 	private PGraphics gameWindow;
 	private PGraphics bottomRect;
@@ -292,8 +294,12 @@ public class Game extends PApplet {
 		bottomRect.beginDraw();
 		bottomRect.fill(0);
 		bottomRect.textSize(15);
-		bottomRect.text("tilt speed : " + Math.round(tiltSpeed * 100) / 100.0,
+		bottomRect.text("Score : " + Math.round(score * 100) / 100.0,
 				BOTTOM_RECT_HEIGHT + 10, 20);
+		bottomRect.text("Velocity : " + mover.ballVelocity(),
+				BOTTOM_RECT_HEIGHT + 10, 40);
+		bottomRect.text("Tilt speed : " + Math.round(tiltSpeed * 100) / 100.0,
+				BOTTOM_RECT_HEIGHT + 10, 60);
 		bottomRect.endDraw();
 	}
 
@@ -326,5 +332,9 @@ public class Game extends PApplet {
 		}
 
 		topView.endDraw();
+	}
+
+	public static void addScore(float diff) {
+		score += diff;
 	}
 }

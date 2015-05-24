@@ -7,7 +7,7 @@ import processing.core.PVector;
 
 public class Mover {
 
-	public static final float GRAVITY_CONSTANT = 10f;
+	public static final float GRAVITY_CONSTANT = 4f;
 	public static final float BALL_MASS = 10f;
 	public static final float BALL_SIZE = 5f;
 
@@ -56,12 +56,14 @@ public class Mover {
 			ballPosition.x = Math.signum(ballPosition.x)
 					* (Game.PLATE_WIDTH / 2 - BALL_SIZE);
 			ballVelocity.x *= -1;
+			Game.addScore(-100 * ballVelocity());
 		}
 		if (ballPosition.z <= -Game.PLATE_WIDTH / 2 + BALL_SIZE
 				|| ballPosition.z >= Game.PLATE_WIDTH / 2 - BALL_SIZE) {
 			ballPosition.z = Math.signum(ballPosition.z)
 					* (Game.PLATE_WIDTH / 2 - BALL_SIZE);
 			ballVelocity.z *= -1;
+			Game.addScore(-1 * ballVelocity());
 		}
 	}
 
@@ -69,12 +71,11 @@ public class Mover {
 		List<PVector> bumps = applet.getBumps();
 		PVector normal, multVect;
 		PVector touched = null;
-		float dx = ballPosition.x;
-		float dz = ballPosition.z;
+		float dx, dz;
 		float dotProd;
 		for (PVector bump : bumps) {
-			dx -= bump.x;
-			dz -= bump.z;
+			dx = ballPosition.x - bump.x;
+			dz = ballPosition.z - bump.z;
 			if (Math.sqrt(dx * dx + dz * dz) <= BALL_SIZE
 					+ Cylinder.CYLINDER_BASE_RADIUS) {
 				normal = PVector.sub(ballPosition, bump);
@@ -86,6 +87,7 @@ public class Mover {
 
 				ballVelocity = PVector.sub(ballVelocity, multVect);
 				touched = bump;
+				Game.addScore(100 * ballVelocity());
 			}
 		}
 		bumps.remove(touched);
@@ -97,5 +99,11 @@ public class Mover {
 
 	public float z() {
 		return ballPosition.z;
+	}
+
+	public float ballVelocity() {
+		return (float) Math.round(Math.sqrt(ballVelocity.x * ballVelocity.x
+				+ ballVelocity.y * ballVelocity.y + ballVelocity.z
+				* ballVelocity.z) * 100) / 100;
 	}
 }

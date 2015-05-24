@@ -74,7 +74,7 @@ public final class ImageProcessing extends PApplet {
 
 		// Hough
 		houghed.resize(1 + original.width / 2, original.height);
-		image(houghed, 1 + original.width, 0);
+		image(houghed, original.width, 0);
 
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
@@ -84,11 +84,10 @@ public final class ImageProcessing extends PApplet {
 		if (corners.size() == 4) {
 			TwoDThreeD mapping = new TwoDThreeD(original.width, original.height);
 
-			PVector anglesInRadians = mapping.get3DRotations(corners);
-			System.out.println("Board rotations: "
-					+ (int) Math.toDegrees(anglesInRadians.x) + ", "
-					+ (int) Math.toDegrees(anglesInRadians.y) + ", "
-					+ (int) Math.toDegrees(anglesInRadians.z));
+			PVector rotation = PVector.mult(mapping.get3DRotations(corners),
+					(float)(180 / Math.PI));
+			System.out.println("Board rotations: " + (int) rotation.x + ", "
+					+ (int) rotation.y + ", " + (int) rotation.z);
 		}
 	}
 }

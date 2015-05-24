@@ -22,7 +22,7 @@ public class Cylinder extends PApplet {
 		float[] z = new float[CYLINDER_RESOLUTION + 1];
 
 		// get the x and z position on a circle for all the sides
-		for (int i = 0; i < x.length; i++) {
+		for (int i = 0; i <= CYLINDER_RESOLUTION; i++) {
 			angle = ((float) Math.PI * 2 / CYLINDER_RESOLUTION) * i;
 			x[i] = (float) Math.sin(angle) * CYLINDER_BASE_RADIUS;
 			z[i] = (float) Math.cos(angle) * CYLINDER_BASE_RADIUS;
@@ -42,9 +42,10 @@ public class Cylinder extends PApplet {
 
 		cylinder.beginShape(TRIANGLE_STRIP);
 		// pourtour
+		float px, pz;
 		for (int i = 0; i <= CYLINDER_RESOLUTION; i++) {
-			float px = cos(radians((int) (i * angle))) * CYLINDER_BASE_RADIUS;
-			float pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+			px = cos(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+			pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
 			cylinder.vertex(px, height, pz);
 			cylinder.vertex(0, height, 0);
 		}
@@ -57,9 +58,10 @@ public class Cylinder extends PApplet {
 		cylinder.beginShape(TRIANGLE_STRIP);
 		int angle = 360 / CYLINDER_RESOLUTION;
 
+		float px, pz;
 		for (int i = 0; i <= CYLINDER_RESOLUTION; i++) {
-			float px = cos(radians((int) (i * angle))) * CYLINDER_BASE_RADIUS;
-			float pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+			px = cos(radians(i * angle)) * CYLINDER_BASE_RADIUS;
+			pz = sin(radians(i * angle)) * CYLINDER_BASE_RADIUS;
 
 			cylinder.vertex(px, bottomHeight, pz);
 			cylinder.vertex(px, topHeight, pz);

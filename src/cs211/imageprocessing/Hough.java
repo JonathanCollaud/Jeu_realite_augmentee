@@ -40,6 +40,7 @@ public final class Hough {
 	private PApplet p;
 
 	public Hough(PApplet p) {
+		initTrigo((int) (Math.PI / DISC_STEPS_PHI));
 		this.p = p;
 	}
 
@@ -153,14 +154,16 @@ public final class Hough {
 			List<PVector> intersections = getIntersections(finalLines);
 
 			if (intersections.size() >= 4) {
-				return TwoDThreeD.sortCorners(getFourCorners(intersections, img.width, img.height));
+				return TwoDThreeD.sortCorners(getFourCorners(intersections,
+						img.width, img.height));
 			} else {
 				return null;
 			}
 		}
 	}
 
-	private List<PVector> getFourCorners(List<PVector> intersections, int width, int height) {
+	private List<PVector> getFourCorners(List<PVector> intersections,
+			int width, int height) {
 		if (intersections.size() < 4) {
 			return null;
 		}
@@ -173,11 +176,13 @@ public final class Hough {
 		PVector clo3 = new PVector(65536, 65536);
 		PVector clo4 = new PVector(65536, 65536);
 
+		PVector corner;
 		for (Iterator<PVector> iterator = intersections.iterator(); iterator
 				.hasNext();) {
-			PVector corner = (PVector) iterator.next();
-			corner.x -= width/2;
-			corner.y -= height/2;
+			corner = (PVector) iterator.next();
+			corner.x -= width / 2;
+			corner.y -= height / 2;
+
 			if (corner.dist(origin) < clo4.dist(origin)) {
 				if (corner.dist(origin) < clo3.dist(origin)) {
 					if (corner.dist(origin) < clo2.dist(origin)) {
@@ -214,7 +219,6 @@ public final class Hough {
 
 		phiDim = (int) (Math.PI / DISC_STEPS_PHI);
 		rDim = (int) (((img.width + img.height) * 2 + 1) / DISC_STEPS_R);
-		initTrigo(phiDim);
 
 		// our accumulator (with a 1 pix margin around)
 		accumulator = new int[(phiDim + 2) * (rDim + 2)];

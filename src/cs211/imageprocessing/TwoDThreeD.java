@@ -23,8 +23,8 @@ public final class TwoDThreeD {
 	static float[][] K = { { f, 0, 0 }, { 0, f, 0 }, { 0, 0, 1 } };
 
 	// Real physical coordinates of the Lego board in mm
-	static float boardSize = 380.f; // large Duplo board
-	// static float boardSize = 255.f; // smaller Lego board
+	// static float boardSize = 380f; // large Duplo board
+	static float boardSize = 255f; // smaller Lego board
 
 	// the 3D coordinates of the physical board corners, clockwise
 	static float[][] physicalCorners = {
@@ -46,7 +46,7 @@ public final class TwoDThreeD {
 	}
 
 	public PVector get3DRotations(List<PVector> points2D) {
-
+		
 		// 1- Solve the extrinsic matrix from the projected 2D points
 		double[][] E = solveExtrinsicMatrix(points2D);
 
@@ -86,18 +86,13 @@ public final class TwoDThreeD {
 
 		float[][] projectedCorners = new float[4][3];
 
-		System.out.print("Projected corners coordinates: [");
 		for (int i = 0; i < 4; i++) {
 			// TODO:
 			// store in projectedCorners the result of (K^(-1) � p), for each
 			// corner p found in the webcam image.
 			// You can use Mat.multiply to multiply a matrix with a vector.
 			projectedCorners[i] = Mat.multiply(invK, points2D.get(i).array());
-			System.out.print("[" + projectedCorners[i][0] + ", "
-					+ projectedCorners[i][1] + ", " + projectedCorners[i][2]
-					+ "], ");
 		}
-		System.out.println("]");
 
 		// 'A' contains the cross-product (K^(-1) � p) X P
 		float[][] A = new float[12][9];
