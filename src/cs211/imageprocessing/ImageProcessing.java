@@ -26,6 +26,7 @@ public final class ImageProcessing extends PApplet {
 	private Blur blur = new Blur(this);
 	private Sobel sobel = new Sobel(this);
 	private Hough hough = new Hough(this);
+	private PVector rotation = new PVector(0, 0, 0);
 
 	private PImage original = null;
 
@@ -85,9 +86,13 @@ public final class ImageProcessing extends PApplet {
 			TwoDThreeD mapping = new TwoDThreeD(original.width, original.height);
 
 			PVector rotation = PVector.mult(mapping.get3DRotations(corners),
-					(float)(180 / Math.PI));
+					(float) (180 / Math.PI));
 			System.out.println("Board rotations: " + (int) rotation.x + ", "
 					+ (int) rotation.y + ", " + (int) rotation.z);
 		}
+	}
+
+	public PVector getRotation() {
+		return this.rotation;
 	}
 }

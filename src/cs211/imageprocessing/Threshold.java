@@ -7,16 +7,17 @@ import processing.core.PImage;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
- * Groupe : AB
+ * 
+ *         Groupe : AB
  */
 public final class Threshold extends Filter {
+	// Lego plate official color: H = 119, B = 59, S = 51
 	private static final float MIN_HUE = 30;
 	private static final float MAX_HUE = 140;
 	private static final float MIN_BRIGHTNESS = 20;
-	private static final float MAX_BRIGHTNESS = 1000;
+	private static final float MAX_BRIGHTNESS = 255;
 	private static final float MIN_SATURATION = 80;
-	private static final float MAX_SATURATION = 300;
+	private static final float MAX_SATURATION = 255;
 	private static final float MIN_INTENSITY = 50;
 	private static final float MAX_INTENSITY = 150;
 

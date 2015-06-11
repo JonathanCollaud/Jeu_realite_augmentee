@@ -46,7 +46,7 @@ public final class TwoDThreeD {
 	}
 
 	public PVector get3DRotations(List<PVector> points2D) {
-		
+
 		// 1- Solve the extrinsic matrix from the projected 2D points
 		double[][] E = solveExtrinsicMatrix(points2D);
 

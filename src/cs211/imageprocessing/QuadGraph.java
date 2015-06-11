@@ -74,6 +74,7 @@ public final class QuadGraph {
 	public List<Integer[]> findCycles() {
 
 		cycles.clear();
+
 		// Parcours chaque n�ud succesivement
 		for (int i = 0; i < graph.length; i++) {
 			for (int j = 0; j < graph[i].length; j++) {
@@ -84,7 +85,7 @@ public final class QuadGraph {
 		Iterator<Integer[]> it = cycles.iterator();
 		while (it.hasNext()) {
 			Integer[] cy = it.next();
-			
+
 			if (cy.length != 4)
 				it.remove();
 		}
@@ -133,11 +134,9 @@ public final class QuadGraph {
 	private static Boolean equals(Integer[] a, Integer[] b) {
 		Boolean ret = (a[0] == b[0]) && (a.length == b.length);
 
-		for (int i = 1; ret && (i < a.length); i++) {
-			if (a[i] != b[i]) {
+		for (int i = 1; ret && (i < a.length); i++)
+			if (a[i] != b[i])
 				ret = false;
-			}
-		}
 
 		return ret;
 	}
@@ -173,43 +172,31 @@ public final class QuadGraph {
 	// compare path against known cycles
 	// return true, iff path is not a known cycle
 	private Boolean isNew(Integer[] path) {
-		Boolean ret = true;
+		for (Integer[] p : cycles)
+			if (equals(p, path))
+				return false;
 
-		for (Integer[] p : cycles) {
-			if (equals(p, path)) {
-				ret = false;
-				break;
-			}
-		}
-
-		return ret;
+		return true;
 	}
 
 	// return the int of the array which is the smallest
 	private static Integer smallest(Integer[] path) {
 		int min = path[0];
 
-		for (int p : path) {
-			if (p < min) {
+		for (int p : path)
+			if (p < min)
 				min = p;
-			}
-		}
 
 		return min;
 	}
 
 	// check if vertex n is contained in path
 	private static Boolean visited(Integer n, Integer[] path) {
-		Boolean ret = false;
+		for (int p : path)
+			if (p == n)
+				return true;
 
-		for (int p : path) {
-			if (p == n) {
-				ret = true;
-				break;
-			}
-		}
-
-		return ret;
+		return false;
 	}
 
 	/**
@@ -237,12 +224,8 @@ public final class QuadGraph {
 		float i3 = v43.cross(v14).z;
 		float i4 = v14.cross(v21).z;
 
-		if ((i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0)
-				|| (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
-			return true;
-		else
-			System.out.println("Eliminating non-convex quad");
-		return false;
+		return (i1 > 0 && i2 > 0 && i3 > 0 && i4 > 0)
+				|| (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0);
 
 	}
 
@@ -264,14 +247,7 @@ public final class QuadGraph {
 
 		float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
 
-		// System.out.println(area);
-
-		boolean valid = (area < max_area && area > min_area);
-
-		if (!valid)
-			System.out.println("Area out of range");
-
-		return valid;
+		return area < max_area && area > min_area;
 	}
 
 	/**
@@ -295,13 +271,8 @@ public final class QuadGraph {
 		float cos3 = Math.abs(v43.dot(v14) / (v43.mag() * v14.mag()));
 		float cos4 = Math.abs(v14.dot(v21) / (v14.mag() * v21.mag()));
 
-		if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos
-				&& cos4 < min_cos)
-			return true;
-		else {
-			System.out.println("Flat quad");
-			return false;
-		}
+		return cos1 < min_cos && cos2 < min_cos && cos3 < min_cos
+				&& cos4 < min_cos;
 	}
 
 	public void printCycles() {

@@ -3,6 +3,7 @@ package cs211;
 import java.util.ArrayList;
 import java.util.List;
 
+import cs211.imageprocessing.ImageProcessing;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -10,11 +11,14 @@ import processing.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class Game extends PApplet {
+
+	private static final boolean GAME_MODE_TANGIBLE = true;
+
 	/**
 	 * Global parameters
 	 */
-	private static final int WINDOW_WIDTH = 800;
-	private static final int GAME_WINDOW_HEIGHT = 500;
+	private static final int WINDOW_WIDTH = 1000;
+	private static final int GAME_WINDOW_HEIGHT = 700;
 	private static final int BOTTOM_RECT_HEIGHT = 100;
 
 	public static final float AMBI = 220f;
@@ -30,6 +34,8 @@ public class Game extends PApplet {
 	public final float BASE_CAM_ROTATION = 0;
 	public final float BASE_CAM_ALTITUDE = -PLATE_WIDTH;
 	public final float BASE_CAM_POSITION = -PLATE_WIDTH;
+
+	public final ImageProcessing IMAGE = new ImageProcessing();
 
 	/**
 	 * Shared var
@@ -48,6 +54,10 @@ public class Game extends PApplet {
 
 	private float rotation_increment = 0.1f;
 	private float tiltSpeed = 1f;
+
+	private final int COLOR_PLATE = color(198, 203, 204);
+	private final int COLOR_BUMPS = color(78, 110, 56);
+	private final int COLOR_BALL = color(127, 128, 64);
 
 	private Mover mover;
 	private List<PVector> bumps = new ArrayList<>();
@@ -123,11 +133,20 @@ public class Game extends PApplet {
 		if (!paused) {
 			// Plate rotation
 			gameWindow.rotateY(rotate_y);
+			
+			if (GAME_MODE_TANGIBLE) {
+				// We are in tangible mode, run the webcam
+				rotate_x = IMAGE.getRotation().x;
+				rotate_z = IMAGE.getRotation().y;
+				
+			} else {
+				// We are in virtual mode
 
-			rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
-					-MAX_ROTATION);
-			rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION,
-					-MAX_ROTATION);
+				rotate_x = map(pmouseX * tiltSpeed, 0, width, MAX_ROTATION,
+						-MAX_ROTATION);
+				rotate_z = map(pmouseY * tiltSpeed, 0, height, MAX_ROTATION,
+						-MAX_ROTATION);
+			}
 
 			// Ball
 			mover.checkEdges();
@@ -149,10 +168,10 @@ public class Game extends PApplet {
 				gameWindow.translate(edit_x, 0, edit_z);
 
 				if (collides(Cylinder.CYLINDER_BASE_RADIUS, edit_x, edit_z)) {
-					gameWindow.fill(color(255, 0, 0, 50));
+					gameWindow.fill(color(COLOR_BUMPS, 50));
 					editable = false;
 				} else {
-					gameWindow.fill(color(255, 0, 0));
+					gameWindow.fill(COLOR_BUMPS);
 					editable = true;
 				}
 
@@ -167,11 +186,11 @@ public class Game extends PApplet {
 		gameWindow.rotateZ(rotate_z);
 
 		// Display plate
-		gameWindow.fill(color(75, 151, 74));
+		gameWindow.fill(COLOR_PLATE);
 		gameWindow.box(PLATE_WIDTH, PLATE_HEIGHT, PLATE_WIDTH);
 
 		// Display cylinders
-		gameWindow.fill(color(255, 0, 0));
+		gameWindow.fill(COLOR_BUMPS);
 		for (PVector bump : bumps) {
 			gameWindow.pushMatrix();
 			gameWindow.translate(bump.x, 0, bump.z);
@@ -180,7 +199,7 @@ public class Game extends PApplet {
 		}
 
 		// Display ball
-		gameWindow.fill(color(0, 0, 255));
+		gameWindow.fill(COLOR_BALL);
 		mover.display(gameWindow);
 
 		gameWindow.popMatrix();
