@@ -1,4 +1,4 @@
-package cs211.imageprocessing;
+package cs211.tangiblegame;
 
 import static processing.core.PApplet.cos;
 import static processing.core.PApplet.min;

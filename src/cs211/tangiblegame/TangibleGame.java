@@ -11,12 +11,6 @@ import processing.core.PVector;
 import processing.event.MouseEvent;
 import processing.video.Capture;
 import processing.video.Movie;
-import cs211.imageprocessing.Blur;
-import cs211.imageprocessing.Hough;
-import cs211.imageprocessing.ImageProcessing;
-import cs211.imageprocessing.Sobel;
-import cs211.imageprocessing.Threshold;
-import cs211.imageprocessing.TwoDThreeD;
 
 /*
             _                             
