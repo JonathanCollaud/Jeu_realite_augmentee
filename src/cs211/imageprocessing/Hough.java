@@ -44,7 +44,7 @@ public final class Hough {
 		this.p = p;
 	}
 
-	public List<PVector> displayLinesAndGetCorners(PImage img) {
+	public List<PVector> displayLinesAndGetCorners(PImage img, boolean showLines) {
 		// Si l’accumulator n’as pas été crée avec une autre image
 		if (accumulator == null) {
 			computeLines(img);
@@ -130,28 +130,30 @@ public final class Hough {
 				int x3 = (int) (-(y3 - line.x / sin(line.y)) * (sin(line.y) / cos(line.y)));
 
 				// Finally, plot the lines
-				p.stroke(204, 102, 0);
-				if (y0 > 0) {
-					if (x1 > 0)
-						p.line(x0, y0, x1, y1);
-					else if (y2 > 0)
-						p.line(x0, y0, x2, y2);
-					else
-						p.line(x0, y0, x3, y3);
-				} else {
-					if (x1 > 0) {
-						if (y2 > 0)
-							p.line(x1, y1, x2, y2);
+				if (showLines) {
+					p.stroke(204, 102, 0);
+					if (y0 > 0) {
+						if (x1 > 0)
+							p.line(x0, y0, x1, y1);
+						else if (y2 > 0)
+							p.line(x0, y0, x2, y2);
 						else
-							p.line(x1, y1, x3, y3);
-					} else
-						p.line(x2, y2, x3, y3);
+							p.line(x0, y0, x3, y3);
+					} else {
+						if (x1 > 0) {
+							if (y2 > 0)
+								p.line(x1, y1, x2, y2);
+							else
+								p.line(x1, y1, x3, y3);
+						} else
+							p.line(x2, y2, x3, y3);
+					}
 				}
 
 			}
 
 			// Prints and return intersections
-			List<PVector> intersections = getIntersections(finalLines);
+			List<PVector> intersections = getIntersections(finalLines, showLines);
 
 			if (intersections.size() >= 4) {
 				return TwoDThreeD.sortCorners(getFourCorners(intersections,
@@ -330,7 +332,7 @@ public final class Hough {
 		}
 	}
 
-	private List<PVector> getIntersections(List<PVector> lines) {
+	private List<PVector> getIntersections(List<PVector> lines, boolean showDots) {
 		List<PVector> intersections = new ArrayList<PVector>();
 
 		for (int i = 0; i < lines.size() - 1; i++) {
@@ -343,8 +345,10 @@ public final class Hough {
 				intersections.add(intersection);
 
 				// draw the intersection
-				p.fill(255, 128, 0);
-				p.ellipse(intersection.x, intersection.y, 10, 10);
+				if (showDots) {
+					p.fill(255, 128, 0);
+					p.ellipse(intersection.x, intersection.y, 10, 10);
+				}
 			}
 		}
 		return intersections;

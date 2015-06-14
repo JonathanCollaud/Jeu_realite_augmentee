@@ -1,10 +1,12 @@
 package cs211.imageprocessing;
 
+import java.util.List;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.video.Capture;
-import java.util.List;
+import processing.video.Movie;
 
 /**
  * @author Jonathan Collaud
@@ -15,10 +17,11 @@ import java.util.List;
  */
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
-	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
+	// private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
+	private static final String LOAD_VIDEO_ADDRESS = "D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/testvideo.mp4";
 	private static final boolean WITH_WEBCAM = false;
 
-	private Capture cam;
+	private Movie cam;
 
 	private Threshold thresh_hbs = new Threshold(this, Threshold.Method.HBS);
 	private Threshold thresh_intensity = new Threshold(this,
@@ -41,24 +44,27 @@ public final class ImageProcessing extends PApplet {
 				for (int i = 0; i < cameras.length; i++) {
 					println(cameras[i]);
 				}
-				cam = new Capture(this, cameras[3]);
-				cam.start();
+				// cam = new Capture(this, cameras[3]);
+				// cam.start();
 			}
+		} else {
+			cam = new Movie(this, LOAD_VIDEO_ADDRESS);
+			cam.loop();
 		}
 
 	}
 
 	public void draw() {
 
-		if (WITH_WEBCAM) {
-			if (cam.available() == true) {
-				cam.read();
-			}
-			original = cam.get();
-			// original.resize(1 + cam.width, 1 + cam.height);
-		} else {
-			original = loadImage(LOAD_IMAGE_ADDRESS);
-		}
+		cam.read();
+
+		original = cam.get();
+		// original.resize(1 + cam.width, 1 + cam.height);
+
+		// else {
+		// // TODO mettre flux vidéo
+		// original = loadImage(LOAD_IMAGE_ADDRESS);
+		// }
 		size((int) (1 + 2.5 * original.width), 1 + original.height);
 
 		PImage modifiedImg;
@@ -80,12 +86,12 @@ public final class ImageProcessing extends PApplet {
 		// Sobel
 		image(modifiedImg, original.width + houghed.width, 0);
 
-		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg);
+		List<PVector> corners = hough.displayLinesAndGetCorners(modifiedImg, true);
 
 		if (corners.size() == 4) {
 			TwoDThreeD mapping = new TwoDThreeD(original.width, original.height);
 
-			PVector rotation = PVector.mult(mapping.get3DRotations(corners),
+			rotation = PVector.mult(mapping.get3DRotations(corners),
 					(float) (180 / Math.PI));
 			System.out.println("Board rotations: " + (int) rotation.x + ", "
 					+ (int) rotation.y + ", " + (int) rotation.z);

@@ -13,7 +13,7 @@ import processing.core.PImage;
  */
 public final class Blur extends Filter {
 	private float[][] KERNEL = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
-	private final int weight = 100;
+	private final int weight = 500;
 	
 	public Blur(PApplet p) {
 		super(p);

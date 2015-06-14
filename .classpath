@@ -22,9 +22,9 @@
 	<classpathentry kind="lib" path="core/library/jogl.awt.jar"/>
 	<classpathentry kind="lib" path="core/library/nativewindow.all.jar"/>
 	<classpathentry kind="lib" path="core/library/papaya/library/papaya.jar"/>
-	<classpathentry kind="lib" path="core/library/jna.jar"/>
-	<classpathentry kind="lib" path="core/library/video.jar"/>
-	<classpathentry kind="lib" path="core/library/gstreamer-java.jar"/>
 	<classpathentry kind="lib" path="core/library/GSVideo.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/gstreamer-java.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/jna.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/processing-2.2.1/modes/java/libraries/video/library/video.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
