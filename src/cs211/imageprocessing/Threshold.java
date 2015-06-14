@@ -14,8 +14,8 @@ public final class Threshold extends Filter {
 	// Lego plate official color: H = 119, B = 59, S = 51
 	private static final float MIN_HUE = 105;
 	private static final float MAX_HUE = 133;
-	private static final float MIN_BRIGHTNESS = 75;
-	private static final float MAX_BRIGHTNESS = 155;
+	private static final float MIN_BRIGHTNESS = 40;
+	private static final float MAX_BRIGHTNESS = 255;
 	private static final float MIN_SATURATION = 80;
 	private static final float MAX_SATURATION = 255;
 	private static final float MIN_INTENSITY = 10;

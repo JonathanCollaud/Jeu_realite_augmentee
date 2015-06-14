@@ -31,7 +31,7 @@ public final class Hough {
 	private static final int NEIGHBOURHOOD = 10; // size of the region we search
 													// for a local maximum
 	private static final int MIN_VOTES = 180; // only search around lines with
-	private static final float MIN_AREA = 100000;
+	private static final float MIN_AREA = 10000;
 	private static final float MAX_AREA = 600000;
 	// more that this amount
 	// of votes (to be adapted to your image)

@@ -1,6 +1,7 @@
 package cs211.tangiblegame;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import processing.core.PApplet;
@@ -16,6 +17,31 @@ import cs211.imageprocessing.ImageProcessing;
 import cs211.imageprocessing.Sobel;
 import cs211.imageprocessing.Threshold;
 import cs211.imageprocessing.TwoDThreeD;
+
+/*
+            _                             
+   _____  _| |_ _ __ ___ _ __ ___   ___   
+  / _ \ \/ / __| '__/ _ \ '_ ` _ \ / _ \  
+ |  __/>  <| |_| | |  __/ | | | | |  __/  
+  \___/_/\_\\__|_|  \___|_| |_| |_|\___|  
+  _                 _                     
+ | |__   __ _ _   _| |__   __ _ _   _ ___ 
+ | '_ \ / _` | | | | '_ \ / _` | | | / __|
+ | |_) | (_| | |_| | | | | (_| | |_| \__ \
+ |_.__/ \__,_|\__,_|_| |_|\__,_|\__,_|___/
+
+                     ~~~
+
+  A minimal-art oriented video game with astonishing 
+  simplicity and sleek interactions.
+
+  @author Jonathan Collaud
+  @author Raphaël Dunant
+  @author Thibault Viglino
+
+  Groupe AB
+
+ */
 
 @SuppressWarnings("serial")
 public class TangibleGame extends PApplet {
@@ -76,7 +102,7 @@ public class TangibleGame extends PApplet {
 	 */
 	private boolean paused = false;
 	private boolean editable = false;
-	private float viewTransform = PAUSE_HEIGHT / 520;
+	private float viewTransform = PAUSE_HEIGHT / 650;
 
 	private float rotate_x = 0;
 	private float rotate_y = 0;
@@ -89,9 +115,9 @@ public class TangibleGame extends PApplet {
 	private float rotation_increment = 0.1f;
 	private float tiltSpeed = 1f;
 
-	private final int COLOR_PLATE = color(150, 20, 20);
-	private final int COLOR_BUMPS = color(0, 0, 0);
-	private final int COLOR_BALL = color(255, 255, 0);
+	private final int COLOR_PLATE = color(200, 199, 195);
+	private final int COLOR_BUMPS = color(227, 42, 21);
+	private final int COLOR_BALL = color(10, 15, 13);
 
 	private Mover mover;
 	private List<PVector> bumps = new ArrayList<>();
@@ -177,7 +203,8 @@ public class TangibleGame extends PApplet {
 						original.height);
 
 				rotation = PVector.mult(mapping.get3DRotations(corners),
-						(float) (180 / Math.PI));
+						(float) (90 * 1E12 / Math.PI));
+				System.out.println(rotation);
 			}
 		}
 
@@ -201,24 +228,24 @@ public class TangibleGame extends PApplet {
 				editable = true;
 			} else {
 				if (cam_pos != BASE_CAM_POSITION) {
-					cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION);
+					cam_pos = Package.getCloser(cam_pos, BASE_CAM_POSITION, 10);
 				}
 				if (cam_alt != BASE_CAM_ALTITUDE) {
-					cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE);
+					cam_alt = Package.getCloser(cam_alt, BASE_CAM_ALTITUDE, 10);
 				}
 				if (cam_rot != BASE_CAM_ROTATION) {
-					cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION);
+					cam_rot = Package.getCloser(cam_rot, BASE_CAM_ROTATION, 10);
 				}
 			}
 		} else {
 			if (cam_pos != 0) {
-				cam_pos = Package.getCloser(cam_pos, 0);
+				cam_pos = Package.getCloser(cam_pos, 0, 10);
 			}
 			if (cam_alt != PAUSE_HEIGHT) {
-				cam_alt = Package.getCloser(cam_alt, PAUSE_HEIGHT);
+				cam_alt = Package.getCloser(cam_alt, PAUSE_HEIGHT, 10);
 			}
 			if (cam_rot != 1) {
-				cam_rot = Package.getCloser(cam_rot, 1);
+				cam_rot = Package.getCloser(cam_rot, 1, 10);
 			}
 		}
 		// Display camera
@@ -235,18 +262,32 @@ public class TangibleGame extends PApplet {
 
 			if (GAME_MODE_TANGIBLE) {
 				// We are in tangible mode, get the calculated angle
-				if (rotation.x > rotate_x) {
+				// rotate_x = -rotation.y;
+				// rotate_z = -rotation.x;
+				// rotate_z = rotation.x;
+				// rotate_z = Package.getCloser(rotate_z, rotation.y, 1);
+
+				float deltax = rotate_x - (-rotation.y);
+				if (deltax > 5) {
 					rotate_x += rotation_increment;
-				} else if (rotation.x < rotate_x) {
+				} else if (deltax > -5) {
+					rotate_x = -rotation.y;
+				} else {
 					rotate_x -= rotation_increment;
 				}
 
-				if (rotation.y > rotate_z) {
+				float deltaz = rotate_z - (-rotation.z);
+				if (deltaz > 5) {
 					rotate_z += rotation_increment;
-				} else if (rotation.y < rotate_z) {
+				} else if (deltaz > -5) {
+					rotate_z = -rotation.z;
+				} else {
 					rotate_z -= rotation_increment;
 				}
 
+				// Rotation vector update
+				rotation.x = -rotate_x;
+				rotation.z = -rotate_z;
 			} else {
 				// We are in virtual mode
 
