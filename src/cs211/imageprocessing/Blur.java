@@ -1,6 +1,5 @@
 package cs211.imageprocessing;
 
-import static processing.core.PConstants.ALPHA;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -8,30 +7,37 @@ import processing.core.PImage;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
- * Groupe : AB
+ * 
+ *         Groupe : AB
  */
 public final class Blur extends Filter {
 	private float[][] KERNEL = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
 
-	private final float weight = 500f;
-	
+	private final float weight = 99f;
+
 	public Blur(PApplet p) {
 		super(p);
 	}
 
 	@Override
 	public PImage filter(final PImage img) {
-		PImage result = p.createImage(img.width, img.height, ALPHA);
-		
+		int x, y, i, j, pixel, sum;
+		int imgW = img.width;
+		int imgH = img.height;
+
+		PImage result = new PImage(imgW, imgH);
+
 		int kernelHalfSize = KERNEL.length / 2;
-		
-		for (int y = 1; y < img.height - 1; y++) {
-			for (int x = 1; x < img.width - 1; x++) {
-				int sum = 0;
-				for (int i = -kernelHalfSize; i <= kernelHalfSize; i++) {
-					for (int j = -kernelHalfSize; j <= kernelHalfSize; j++) {
-						int pixel = img.pixels[(y + j) * img.width + x + i];
+
+		for (y = 1; y < imgH - 1; y++) {
+			for (x = 1; x < imgW - 1; x++) {
+
+				sum = 0;
+				pixel = img.pixels[y * imgW + x];
+
+				for (i = -kernelHalfSize; i <= kernelHalfSize; i++) {
+					for (j = -kernelHalfSize; j <= kernelHalfSize; j++) {
+						pixel = img.pixels[(y + j) * img.width + x + i];
 						sum += p.brightness(pixel)
 								* KERNEL[i + kernelHalfSize][j + kernelHalfSize];
 					}
@@ -39,7 +45,7 @@ public final class Blur extends Filter {
 				result.pixels[y * img.width + x] = p.color(sum / weight);
 			}
 		}
-		
+
 		return result;
 	}
 

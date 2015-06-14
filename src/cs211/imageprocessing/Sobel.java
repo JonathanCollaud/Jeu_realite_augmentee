@@ -2,7 +2,6 @@ package cs211.imageprocessing;
 
 import static processing.core.PApplet.pow;
 import static processing.core.PApplet.sqrt;
-import static processing.core.PConstants.ALPHA;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -10,14 +9,14 @@ import processing.core.PImage;
  * @author Jonathan Collaud
  * @author Raphaël Dunant
  * @author Thibault Viglino
- *
- * Groupe : AB
+ * 
+ *         Groupe : AB
  */
 public final class Sobel extends Filter {
 	private float[][] H_KERNEL = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
 	private float[][] V_KERNEL = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
 	private float weight = 1.f;
-	
+
 	public Sobel(PApplet p) {
 		super(p);
 	}
@@ -25,7 +24,7 @@ public final class Sobel extends Filter {
 	@Override
 	public PImage filter(final PImage img) {
 		PImage image;
-		
+
 		int x, y, i, j;
 		int imgW = img.width;
 		int imgH = img.height;
@@ -33,19 +32,20 @@ public final class Sobel extends Filter {
 
 		// *************************************
 		// Implement here the double convolution
-		image = p.createImage(imgW, imgH, ALPHA);
+		image = new PImage(imgW, imgH);
 		int kernelHalfSize = H_KERNEL.length / 2;
 		float pixelBrightness;
 		float maxBrightness = 0;
 		float sum_h, sum_v, sum;
-		
+
 		for (y = 1; y < imgH - 1; y++) {
 			for (x = 1; x < imgW - 1; x++) {
 				sum_h = 0;
 				sum_v = 0;
 				for (i = -kernelHalfSize; i <= kernelHalfSize; i++) {
 					for (j = -kernelHalfSize; j <= kernelHalfSize; j++) {
-						pixelBrightness = p.brightness(img.pixels[(y + j) * imgW + x + i]);
+						pixelBrightness = p.brightness(img.pixels[(y + j)
+								* imgW + x + i]);
 						sum_h += pixelBrightness
 								* H_KERNEL[i + kernelHalfSize][j
 										+ kernelHalfSize];
@@ -70,7 +70,7 @@ public final class Sobel extends Filter {
 				}
 			}
 		}
-		
+
 		return image;
 	}
 }

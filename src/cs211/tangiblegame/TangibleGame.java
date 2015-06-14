@@ -19,27 +19,27 @@ import cs211.imageprocessing.Threshold;
 import cs211.imageprocessing.TwoDThreeD;
 
 /*
-            _                             
-   _____  _| |_ _ __ ___ _ __ ___   ___   
-  / _ \ \/ / __| '__/ _ \ '_ ` _ \ / _ \  
+            _                             
+   _____  _| |_ _ __ ___ _ __ ___   ___   
+  / _ \ \/ / __| '__/ _ \ '_ ` _ \ / _ \  
  |  __/>  <| |_| | |  __/ | | | | |  __/  
-  \___/_/\_\\__|_|  \___|_| |_| |_|\___|  
-  _                 _                     
+  \___/_/\_\\__|_|  \___|_| |_| |_|\___|  
+  _                 _                     
  | |__   __ _ _   _| |__   __ _ _   _ ___ 
  | '_ \ / _` | | | | '_ \ / _` | | | / __|
  | |_) | (_| | |_| | | | | (_| | |_| \__ \
  |_.__/ \__,_|\__,_|_| |_|\__,_|\__,_|___/
 
-                     ~~~
+                     ~~~
 
-  A minimal-art oriented video game with astonishing 
-  simplicity and sleek interactions.
+  A minimal-art oriented video game with astonishing 
+  simplicity and sleek interactions.
 
-  @author Jonathan Collaud
-  @author Raphaël Dunant
-  @author Thibault Viglino
+  @author Jonathan Collaud
+  @author RaphaÃ«l Dunant
+  @author Thibault Viglino
 
-  Groupe AB
+  Groupe AB
 
  */
 
@@ -49,7 +49,7 @@ public class TangibleGame extends PApplet {
 	/**
 	 * Rï¿½glages important pour les tests
 	 */
-	private static final String LOAD_VIDEO_ADDRESS = "D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/testvideo.mp4";
+	private static final String LOAD_VIDEO_ADDRESS = "/Applications/Eclipse/Workspace/ProjetInfoVisuelle/src/cs211/ressources/testvideo.mp4";
 	private static final boolean GAME_MODE_TANGIBLE = true;
 	private static final boolean WITH_WEBCAM = false;
 
@@ -67,6 +67,8 @@ public class TangibleGame extends PApplet {
 	private static final int WINDOW_WIDTH = 1000;
 	private static final int GAME_WINDOW_HEIGHT = 700;
 	private static final int BOTTOM_RECT_HEIGHT = 100;
+	private static final int SMALL_VIDEO_WIDTH = 160;
+	private static final int SMALL_VIDEO_HEIGHT = 120;
 
 	public static final float AMBI = 220f;
 	public static final float BG_COLOR = 255f;
@@ -112,7 +114,7 @@ public class TangibleGame extends PApplet {
 	private float cam_pos = BASE_CAM_POSITION;
 	private float cam_alt = BASE_CAM_ALTITUDE;
 
-	private float rotation_increment = 0.05f;
+	private float rotation_increment = 0.01f;
 	private float tiltSpeed = 1f;
 
 	private final int COLOR_PLATE = color(200, 199, 195);
@@ -129,6 +131,7 @@ public class TangibleGame extends PApplet {
 
 	// Graphics
 	private PGraphics gameWindow;
+	private PGraphics smallVideo;
 	private PGraphics bottomRect;
 	private PGraphics topView;
 
@@ -141,6 +144,7 @@ public class TangibleGame extends PApplet {
 		size(WINDOW_WIDTH, GAME_WINDOW_HEIGHT + BOTTOM_RECT_HEIGHT, P3D);
 		mover = new Mover(this);
 		gameWindow = createGraphics(WINDOW_WIDTH, GAME_WINDOW_HEIGHT, P3D);
+		smallVideo = createGraphics(SMALL_VIDEO_WIDTH, SMALL_VIDEO_HEIGHT, P2D);
 		bottomRect = createGraphics(WINDOW_WIDTH, BOTTOM_RECT_HEIGHT, P2D);
 		topView = createGraphics(BOTTOM_RECT_HEIGHT - 10,
 				BOTTOM_RECT_HEIGHT - 10, P2D);
@@ -213,6 +217,8 @@ public class TangibleGame extends PApplet {
 		 */
 		drawGameWindow();
 		image(gameWindow, 0, 0);
+		drawSmallVideo();
+		image(smallVideo, 5, 5);
 		drawBottomRect();
 		image(bottomRect, 0, GAME_WINDOW_HEIGHT);
 		drawTopView();
@@ -456,11 +462,16 @@ public class TangibleGame extends PApplet {
 		gameWindow.endDraw();
 	}
 
+	void drawSmallVideo() {
+		smallVideo.beginDraw();
+		if (GAME_MODE_TANGIBLE) {
+			smallVideo.image(original, 0, 0, 160, 120);
+		}
+		smallVideo.endDraw();
+	}
+
 	void drawBottomRect() {
 		bottomRect.beginDraw();
-		if (GAME_MODE_TANGIBLE) {
-			image(original, 5, 5, 160, 120);
-		}
 		bottomRect.background(255, 255, 200);
 		bottomRect
 				.rect(0, GAME_WINDOW_HEIGHT, WINDOW_WIDTH, BOTTOM_RECT_HEIGHT);
