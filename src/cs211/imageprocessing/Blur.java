@@ -13,7 +13,8 @@ import processing.core.PImage;
  */
 public final class Blur extends Filter {
 	private float[][] KERNEL = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
-	private final int weight = 500;
+
+	private final float weight = 500f;
 	
 	public Blur(PApplet p) {
 		super(p);
@@ -28,8 +29,8 @@ public final class Blur extends Filter {
 		for (int y = 1; y < img.height - 1; y++) {
 			for (int x = 1; x < img.width - 1; x++) {
 				int sum = 0;
-				for (int i = -kernelHalfSize; i < kernelHalfSize; i++) {
-					for (int j = -kernelHalfSize; j < kernelHalfSize; j++) {
+				for (int i = -kernelHalfSize; i <= kernelHalfSize; i++) {
+					for (int j = -kernelHalfSize; j <= kernelHalfSize; j++) {
 						int pixel = img.pixels[(y + j) * img.width + x + i];
 						sum += p.brightness(pixel)
 								* KERNEL[i + kernelHalfSize][j + kernelHalfSize];

@@ -12,14 +12,22 @@ import processing.core.PImage;
  */
 public final class Threshold extends Filter {
 	// Lego plate official color: H = 119, B = 59, S = 51
-	private static final float MIN_HUE = 105;
-	private static final float MAX_HUE = 133;
-	private static final float MIN_BRIGHTNESS = 75;
-	private static final float MAX_BRIGHTNESS = 155;
-	private static final float MIN_SATURATION = 80;
+	// <<<<<<< Updated upstream
+	// private static final float MIN_HUE = 105;
+	// private static final float MAX_HUE = 133;
+	// private static final float MIN_BRIGHTNESS = 75;
+	// private static final float MAX_BRIGHTNESS = 155;
+	// private static final float MIN_SATURATION = 80;
+	// private static final float MAX_SATURATION = 255;
+	// =======
+	private static final float MIN_HUE = 80;
+	private static final float MAX_HUE = 160;
+	private static final float MIN_BRIGHTNESS = 60;
+	private static final float MAX_BRIGHTNESS = 150;
+	private static final float MIN_SATURATION = 100;
 	private static final float MAX_SATURATION = 255;
-	private static final float MIN_INTENSITY = 10;
-	private static final float MAX_INTENSITY = 150;
+
+	private static final float INTENSITY_THRESHOLD = 128;
 
 	private final Method method;
 
@@ -62,7 +70,7 @@ public final class Threshold extends Filter {
 						image.pixels[y * imgW + x] = p.color(0);
 					}
 				} else if (method.equals(Method.INTENSITY)) {
-					if (MIN_INTENSITY < pixBri && pixBri < MAX_INTENSITY) {
+					if (pixBri < INTENSITY_THRESHOLD) {
 						image.pixels[y * imgW + x] = p.color(255);
 					} else {
 						image.pixels[y * imgW + x] = p.color(0);

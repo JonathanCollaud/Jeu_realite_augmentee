@@ -21,14 +21,14 @@ import cs211.imageprocessing.TwoDThreeD;
 public class TangibleGame extends PApplet {
 
 	/**
-	 * Réglages important pour les tests
+	 * Rï¿½glages important pour les tests
 	 */
 	private static final String LOAD_VIDEO_ADDRESS = "D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/testvideo.mp4";
 	private static final boolean GAME_MODE_TANGIBLE = true;
-	private static final boolean WITH_WEBCAM = false;
+	private static final boolean WITH_WEBCAM = true;
 
 	/**
-	 * Réglages webcam
+	 * Rï¿½glages webcam
 	 */
 	private PVector rotation = new PVector(0, 0, 0);
 
@@ -119,7 +119,7 @@ public class TangibleGame extends PApplet {
 		topView = createGraphics(BOTTOM_RECT_HEIGHT - 10,
 				BOTTOM_RECT_HEIGHT - 10, P2D);
 
-		// / Gestion webcam / vidéo
+		// / Gestion webcam / vidï¿½o
 
 		if (GAME_MODE_TANGIBLE) {
 			if (WITH_WEBCAM) {
@@ -145,7 +145,7 @@ public class TangibleGame extends PApplet {
 	@Override
 	public void draw() {
 		/**
-		 * Gestion du stream vidéo
+		 * Gestion du stream vidï¿½o
 		 */
 
 		if (GAME_MODE_TANGIBLE) {
@@ -182,7 +182,7 @@ public class TangibleGame extends PApplet {
 		}
 
 		/**
-		 * Déplace la balle et la plaque
+		 * Dï¿½place la balle et la plaque
 		 */
 		drawGameWindow();
 		image(gameWindow, 0, 0);
