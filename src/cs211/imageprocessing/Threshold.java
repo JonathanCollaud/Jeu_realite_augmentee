@@ -20,7 +20,7 @@ public final class Threshold extends Filter {
 	private static final float MIN_SATURATION = 80;
 	private static final float MAX_SATURATION = 255;
 
-	private static final float INTENSITY_THRESHOLD = 128;
+	private static final float INTENSITY_THRESHOLD = 10;
 
 	private final Method method;
 
@@ -64,9 +64,9 @@ public final class Threshold extends Filter {
 					}
 				} else if (method.equals(Method.INTENSITY)) {
 					if (pixBri < INTENSITY_THRESHOLD) {
-						image.pixels[y * imgW + x] = p.color(255);
-					} else {
 						image.pixels[y * imgW + x] = p.color(0);
+					} else {
+						image.pixels[y * imgW + x] = p.color(255);
 					}
 				}
 			}

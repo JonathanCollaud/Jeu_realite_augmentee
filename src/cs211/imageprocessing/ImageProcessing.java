@@ -17,9 +17,9 @@ import processing.video.Movie;
  */
 public final class ImageProcessing extends PApplet {
 	private static final long serialVersionUID = -1L;
-	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
-	private static final String LOAD_VIDEO_ADDRESS = "/Applications/Eclipse/Workspace/ProjetInfoVisuelle/src/cs211/ressources/testvideo.mp4";
-	private static final boolean WITH_WEBCAM = true;
+//	private static final String LOAD_IMAGE_ADDRESS = "board1.jpg";
+	private static final String LOAD_VIDEO_ADDRESS = "D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/testvideo.mp4";
+	private static final boolean WITH_WEBCAM = false;
 
 	private Movie cam;
 

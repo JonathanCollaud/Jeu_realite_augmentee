@@ -51,7 +51,7 @@ public class TangibleGame extends PApplet {
 	 */
 	private static final String LOAD_VIDEO_ADDRESS = "D:/Workspace/info_visuelle/Jeu_realite_augmentee/Jeu_realite_augmentee/src/cs211/ressources/testvideo.mp4";
 	private static final boolean GAME_MODE_TANGIBLE = true;
-	private static final boolean WITH_WEBCAM = true;
+	private static final boolean WITH_WEBCAM = false;
 
 	/**
 	 * R�glages webcam
@@ -112,7 +112,7 @@ public class TangibleGame extends PApplet {
 	private float cam_pos = BASE_CAM_POSITION;
 	private float cam_alt = BASE_CAM_ALTITUDE;
 
-	private float rotation_increment = 0.1f;
+	private float rotation_increment = 0.05f;
 	private float tiltSpeed = 1f;
 
 	private final int COLOR_PLATE = color(200, 199, 195);
@@ -267,27 +267,30 @@ public class TangibleGame extends PApplet {
 				// rotate_z = rotation.x;
 				// rotate_z = Package.getCloser(rotate_z, rotation.y, 1);
 
-				float deltax = rotate_x - (-rotation.y);
-				if (deltax > 5) {
+				float delta = 2f;
+				
+				float deltax = rotate_x - (-rotation.z);
+				if (deltax > delta) {
 					rotate_x += rotation_increment;
-				} else if (deltax > -5) {
-					rotate_x = -rotation.y;
+				} else if (deltax > -delta) {
+					rotate_x = -rotation.z;
 				} else {
 					rotate_x -= rotation_increment;
 				}
 
-				float deltaz = rotate_z - (-rotation.z);
-				if (deltaz > 5) {
+				float deltaz = rotate_z - (-rotation.y);
+				System.out.println(deltaz);
+				if (deltaz > delta) {
 					rotate_z += rotation_increment;
-				} else if (deltaz > -5) {
-					rotate_z = -rotation.z;
+				} else if (deltaz > -delta) {
+					rotate_z = -rotation.y;
 				} else {
 					rotate_z -= rotation_increment;
 				}
 
 				// Rotation vector update
-				rotation.x = -rotate_x;
-				rotation.z = -rotate_z;
+				rotation.z = -rotate_x;
+				rotation.y = -rotate_z;
 			} else {
 				// We are in virtual mode
 
